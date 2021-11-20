@@ -15,4 +15,7 @@ else{
 
 const auth = firebase.auth()
 
+const firestore = firebase.firestore()
+
 export {auth}
+export {firestore}

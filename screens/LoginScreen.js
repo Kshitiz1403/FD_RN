@@ -1,13 +1,19 @@
 import { useNavigation } from '@react-navigation/core'
+import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
 import React, { useRef, useState } from 'react'
 import { useEffect } from 'react'
 import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { auth } from '../firebase'
+import { auth, firestore } from '../firebase'
+import { firebaseConfig } from '../firebaseConfig'
+import * as firebase from 'firebase'
 
 const LoginScreen = () => {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [phone, setPhone] = useState()
+    const [otp, setOtp] = useState()
+    const [verificationId, setVerificationId] = useState();
 
     const navigation = useNavigation()
 
@@ -20,45 +26,109 @@ const LoginScreen = () => {
         return unsubscribe
     }, [])
 
-    const handleUserSignUp = () => {
-        auth
-            .createUserWithEmailAndPassword(email, password)
-            .then(userCredentials => {
-                const user = userCredentials.user
-                console.log(user.email)
-            })
-            .catch(error => alert(error))
+    {/* FOR EMAIL AND PASSWORD BASED AUTHENTICATION */}
+
+
+    // const handleUserSignUp = () => {
+    //     auth
+    //         .createUserWithEmailAndPassword(email, password)
+    //         .then(userCredentials => {
+    //             const user = userCredentials.user
+    //             console.log(user.email)
+    //             // User id
+    //             console.log(user.uid)
+    //             return (firestore.collection('users').doc(user.uid).set({
+    //                 // Add the fields that you want to add to a user document inside users collection
+
+    //             }))
+    //         })
+    //         .catch(error => alert(error))
+    // }
+
+    // const handleLogin = () => {
+    //     auth
+    //         .signInWithEmailAndPassword(email, password)
+    //         .then(userCredentials => {
+    //             const user = userCredentials.user
+    //             console.log("Logged in with: ", user.email)
+    //         })
+    //         .catch(error => alert(error))
+    // }
+
+    // const handleResetPassword = () => {
+    //     auth
+    //         .sendPasswordResetEmail(email)
+    //         .then(() => {
+    //             alert("Password reset email sent!")
+    //         })
+    //         .catch((error) => {
+    //             alert(error)
+    //         })
+    // }
+
+    // const ref_input_password = useRef()
+
+    {/* ------------------------------------------ */}
+
+
+    const handleSendOTP = async () => {
+        try {
+            const verificationId = await firebase.auth().signInWithPhoneNumber(
+                phone,
+                recaptchaVerifier.current
+            );
+            setVerificationId(verificationId);
+            alert("otp has been sent")
+            console.log(verificationId)
+        } catch (err) {
+            alert(err)
+        }
     }
 
-    const handleLogin = () => {
-        auth
-            .signInWithEmailAndPassword(email, password)
-            .then(userCredentials => {
-                const user = userCredentials.user
-                console.log("Logged in with: ", user.email)
-            })
-            .catch(error => alert(error))
+
+    const handleVerifyOTP = async () => {
+        try {
+            const credential = firebase.auth.PhoneAuthProvider.credential(
+                verificationId.verificationId,
+                otp
+            );
+            await firebase.auth().signInWithCredential(credential);
+            alert("Phone verification successful")
+        } catch (err) {
+            alert(err)
+        }
     }
 
-    const handleResetPassword = () => {
-        auth
-            .sendPasswordResetEmail(email)
-            .then(() => {
-                alert("Password reset email sent!")
-            })
-            .catch((error) => {
-                alert(error)
-            })
-    }
+    const recaptchaVerifier = useRef(null);
+    const attemptInvisibleVerification = false;
 
-    const ref_input_password = useRef()
 
     return (
         <View
             style={styles.container}
         >
+            <FirebaseRecaptchaVerifierModal
+                ref={recaptchaVerifier}
+                firebaseConfig={firebaseConfig}
+                attemptInvisibleVerification={attemptInvisibleVerification}
+            />
             <View style={styles.inputContainer}>
                 <TextInput
+                    placeholder="phone"
+                    value={phone}
+                    onChangeText={v => setPhone(v)}
+                    style={styles.input}
+                />
+                <TextInput
+                    placeholder="OTP"
+                    value={otp}
+                    onChangeText={v => setOtp(v)}
+                    style={styles.input}
+                />
+
+
+            {/* FOR EMAIL AND PASSWORD BASED AUTHENTICATION */}
+                {/* <TextInput
                     autoCapitalize="none"
                     placeholder="Email"
                     value={email}
@@ -77,11 +147,27 @@ const LoginScreen = () => {
                     style={styles.input}
                     secureTextEntry
                     onSubmitEditing={handleLogin}
-                />
+                /> */}
+            {/* ------------------------------------------ */}
+
             </View>
 
             <View style={styles.buttonContainer}>
                 <TouchableOpacity
+                    onPress={handleSendOTP}
+                    style={styles.button}
+                >
+                    <Text style={styles.buttonText}>Send OTP</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={handleVerifyOTP}
+                    style={[styles.button, styles.buttonOutline]}
+                >
+                    <Text style={styles.buttonOutlineText}>Verify</Text>
+                </TouchableOpacity>
+            
+            {/* FOR EMAIL AND PASSWORD BASED AUTHENTICATION */}
+                {/* <TouchableOpacity
                     onPress={handleLogin}
                     style={styles.button}
                 >
@@ -97,7 +183,9 @@ const LoginScreen = () => {
                     onPress={handleResetPassword}
                 >
                     <Text>Forgot Password</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
+            {/* ------------------------------------------ */}
+            
             </View>
         </View>
     )
