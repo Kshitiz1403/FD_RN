@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/core'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useEffect } from 'react'
 import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { auth } from '../firebase'
@@ -51,18 +51,26 @@ const LoginScreen = () => {
             })
     }
 
+    const ref_input_password = useRef()
+
     return (
         <View
             style={styles.container}
         >
             <View style={styles.inputContainer}>
                 <TextInput
+                    autoCapitalize="none"
                     placeholder="Email"
                     value={email}
                     onChangeText={v => setEmail(v)}
                     style={styles.input}
+                    autoComplete="email"
+                    returnKeyType="next"
+                    onSubmitEditing={() => { ref_input_password.current.focus() }}
+                    blurOnSubmit={false}
                 />
                 <TextInput
+                    ref={ref_input_password}
                     placeholder="Password"
                     value={password}
                     onChangeText={v => setPassword(v)}
