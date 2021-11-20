@@ -1,9 +1,8 @@
 import { useNavigation } from '@react-navigation/core'
 import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
-import React, { useRef, useState } from 'react'
-import { useEffect } from 'react'
-import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { auth, firestore } from '../firebase'
+import React, { useRef, useState, useEffect } from 'react'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { auth } from '../firebase'
 import { firebaseConfig } from '../firebaseConfig'
 import * as firebase from 'firebase'
 
@@ -26,7 +25,7 @@ const LoginScreen = () => {
         return unsubscribe
     }, [])
 
-    {/* FOR EMAIL AND PASSWORD BASED AUTHENTICATION */}
+    {/* FOR EMAIL AND PASSWORD BASED AUTHENTICATION */ }
 
 
     // const handleUserSignUp = () => {
@@ -68,7 +67,7 @@ const LoginScreen = () => {
 
     // const ref_input_password = useRef()
 
-    {/* ------------------------------------------ */}
+    {/* ------------------------------------------ */ }
 
 
     const handleSendOTP = async () => {
@@ -127,7 +126,7 @@ const LoginScreen = () => {
                 />
 
 
-            {/* FOR EMAIL AND PASSWORD BASED AUTHENTICATION */}
+                {/* FOR EMAIL AND PASSWORD BASED AUTHENTICATION */}
                 {/* <TextInput
                     autoCapitalize="none"
                     placeholder="Email"
@@ -148,7 +147,7 @@ const LoginScreen = () => {
                     secureTextEntry
                     onSubmitEditing={handleLogin}
                 /> */}
-            {/* ------------------------------------------ */}
+                {/* ------------------------------------------ */}
 
             </View>
 
@@ -165,8 +164,8 @@ const LoginScreen = () => {
                 >
                     <Text style={styles.buttonOutlineText}>Verify</Text>
                 </TouchableOpacity>
-            
-            {/* FOR EMAIL AND PASSWORD BASED AUTHENTICATION */}
+
+                {/* FOR EMAIL AND PASSWORD BASED AUTHENTICATION */}
                 {/* <TouchableOpacity
                     onPress={handleLogin}
                     style={styles.button}
@@ -184,8 +183,8 @@ const LoginScreen = () => {
                 >
                     <Text>Forgot Password</Text>
                 </TouchableOpacity> */}
-            {/* ------------------------------------------ */}
-            
+                {/* ------------------------------------------ */}
+
             </View>
         </View>
     )
