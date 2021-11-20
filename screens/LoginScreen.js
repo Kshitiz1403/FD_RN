@@ -40,6 +40,17 @@ const LoginScreen = () => {
             .catch(error => alert(error))
     }
 
+    const handleResetPassword = () => {
+        auth
+            .sendPasswordResetEmail(email)
+            .then(() => {
+                alert("Password reset email sent!")
+            })
+            .catch((error) => {
+                alert(error)
+            })
+    }
+
     return (
         <View
             style={styles.container}
@@ -72,6 +83,11 @@ const LoginScreen = () => {
                     style={[styles.button, styles.buttonOutline]}
                 >
                     <Text style={styles.buttonOutlineText}>Register</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={handleResetPassword}
+                >
+                    <Text>Forgot Password</Text>
                 </TouchableOpacity>
             </View>
         </View>
