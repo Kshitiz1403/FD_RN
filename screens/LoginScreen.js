@@ -5,6 +5,7 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import { auth } from '../firebase'
 import { firebaseConfig } from '../firebaseConfig'
 import * as firebase from 'firebase'
+import { Picker } from '@react-native-picker/picker';
 
 const LoginScreen = () => {
 
@@ -14,6 +15,7 @@ const LoginScreen = () => {
     const [otp, setOtp] = useState()
     const [verificationId, setVerificationId] = useState();
 
+    const [selectedLanguage, setSelectedLanguage] = useState()
     const navigation = useNavigation()
 
     useEffect(() => {
@@ -73,7 +75,7 @@ const LoginScreen = () => {
     const handleSendOTP = async () => {
         try {
             const verificationId = await firebase.auth().signInWithPhoneNumber(
-                phone,
+                `+91${phone}`,
                 recaptchaVerifier.current
             );
             setVerificationId(verificationId);
@@ -112,19 +114,26 @@ const LoginScreen = () => {
                 attemptInvisibleVerification={attemptInvisibleVerification}
             />
             <View style={styles.inputContainer}>
-                <TextInput
-                    placeholder="phone"
-                    value={phone}
-                    onChangeText={v => setPhone(v)}
-                    style={styles.input}
-                />
+                <View style={[{ flexDirection: 'row', alignItems: 'center' }, styles.input]}>
+                    <Text style={{ marginRight: 10, color: 'black' }}>
+                        +91
+                    </Text>
+                    <TextInput
+                        placeholder="Mobile Number"
+                        value={phone}
+                        onChangeText={v => setPhone(v)}
+                        keyboardType="number-pad"
+                        style={{ width: '90%' }}
+                    />
+                </View>
+
                 <TextInput
                     placeholder="OTP"
                     value={otp}
                     onChangeText={v => setOtp(v)}
                     style={styles.input}
+                    keyboardType="number-pad"
                 />
-
 
                 {/* FOR EMAIL AND PASSWORD BASED AUTHENTICATION */}
                 {/* <TextInput
@@ -206,7 +215,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 10,
         borderRadius: 10,
-        marginTop: 5
+        marginTop: 5,
     },
     buttonContainer: {
         width: '60%',
