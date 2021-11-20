@@ -76,6 +76,7 @@ const LoginScreen = () => {
                     onChangeText={v => setPassword(v)}
                     style={styles.input}
                     secureTextEntry
+                    onSubmitEditing={handleLogin}
                 />
             </View>
 
