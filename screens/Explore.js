@@ -1,8 +1,8 @@
 import { useNavigation } from '@react-navigation/core'
-import React, { useState } from 'react'
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions, TextInput } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions, TextInput, LogBox } from 'react-native'
 import TextCustom from '../constants/TextCustom'
-import { auth } from '../firebase'
+import { auth, firestore } from '../firebase'
 import { SimpleLineIcons } from '@expo/vector-icons';
 import colors from '../constants/colors'
 import { Feather } from '@expo/vector-icons';
@@ -13,22 +13,27 @@ const Explore = () => {
 
     const [selectedHostel, setSelectedHostel] = useState()
     const [roomNumber, setRoomNumber] = useState()
-
     const [address, setAddress] = useState({ roomNo: NaN, hostel: null })
-    // fetch address from firebase and store it in initial state
 
+    useEffect(() => {
+        firestore.collection('users').doc(UID).get().then((doc => {
+            if (doc.data().address) {
+                setAddress({ roomNo: doc.data().address.roomNumber, hostel: doc.data().address.hostel })
+            }
+        })).catch((err) => console.log(err))
+        return
+    }, [])
 
     const [isAddressModalVisible, setIsAddressModalVisible] = useState(false)
 
     const navigation = useNavigation()
 
+    const user = auth.currentUser
+    const UID = user.uid
+
     const handleSignOut = () => {
         auth
             .signOut()
-            // .then(() => {
-            //     navigation.replace("Login")
-            // })
-            // .catch((err) => alert(err))
     }
 
     let handleHostelIdentifier
@@ -70,12 +75,19 @@ const Explore = () => {
         headerTitle: () => <DeliverTo />
     })
 
-    const handleSaveAddress = () => {
+    const handleSaveAddress = async () => {
         // Implement firebase logic to save address to the firestore database
-
-
         setAddress({ roomNo: roomNumber, hostel: selectedHostel })
         toggleAddressModal()
+
+        await (firestore.collection('users').doc(UID).set({
+            address: {
+                roomNumber: roomNumber,
+                hostel: selectedHostel
+            }
+        }))
+
+
     }
     return (
         <View>
@@ -86,7 +98,7 @@ const Explore = () => {
                 <View style={styles.addressModalContainer}>
                     <TextInput
                         value={roomNumber}
-                        onChangeText={(v) => setRoomNumber(v)}
+                        onChangeText={(v) => setRoomNumber(v.replace(/[^0-9]/g, ''))}
                         placeholder="Room Number"
                         placeholderTextColor={colors.text.light}
                         keyboardType="number-pad"
