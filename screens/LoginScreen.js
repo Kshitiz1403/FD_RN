@@ -67,7 +67,6 @@ const LoginScreen = () => {
             );
             setVerificationId(verificationId);
             alert("OTP has been sent")
-            console.log(verificationId)
         } catch (err) {
             alert(err)
         }
