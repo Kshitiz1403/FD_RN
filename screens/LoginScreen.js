@@ -108,7 +108,7 @@ const LoginScreen = () => {
                     <TextInput
                         placeholder="Mobile Number"
                         value={phone}
-                        onChangeText={v => setPhone(v)}
+                        onChangeText={v => setPhone(v.replace(/[^0-9]/g, ''))}
                         keyboardType="number-pad"
                         style={{ width: '90%' }}
                         maxLength={10}
@@ -119,7 +119,7 @@ const LoginScreen = () => {
                 <TextInput
                     placeholder="OTP"
                     value={otp}
-                    onChangeText={v => setOtp(v)}
+                    onChangeText={v => setOtp(v.replace(/[^0-9]/g, ''))}
                     style={styles.input}
                     keyboardType="number-pad"
                     maxLength={6}
