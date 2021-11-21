@@ -14,18 +14,6 @@ const LoginScreen = () => {
     const [otp, setOtp] = useState()
     const [verificationId, setVerificationId] = useState();
 
-    const navigation = useNavigation()
-
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
-            if (user) {
-                navigation.replace("Home")
-                // navigation.replace("Home")
-            }
-        })
-        return unsubscribe
-    }, [])
-
     {/* FOR EMAIL AND PASSWORD BASED AUTHENTICATION */ }
 
 

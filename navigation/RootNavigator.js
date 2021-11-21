@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import Account from '../screens/Account'
 import Explore from '../screens/Explore'
@@ -10,6 +10,7 @@ import { Entypo } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Cart from '../screens/Cart'
 import colors from '../constants/colors'
+import { auth } from '../firebase'
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator();
@@ -48,12 +49,37 @@ const MyTheme = {
 };
 
 const RootNavigator = () => {
+
+    const [isUserSignedIn, setIsUserSignedIn] = useState(false)
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged(user => {
+            if (user) {
+                setIsUserSignedIn(true)
+            }
+            else {
+                setIsUserSignedIn(false)
+            }
+        })
+        return unsubscribe
+    }, [])
+
+    const AuthStack = createNativeStackNavigator()
+    const AuthStackScreen = () => (
+        <AuthStack.Navigator>
+            <AuthStack.Screen name="Login" component={LoginScreen} />
+        </AuthStack.Navigator>
+    )
+
+    const AppStack = createNativeStackNavigator()
+    const AppStackScreen = () => (
+        <AppStack.Navigator>
+            <AppStack.Screen name="Home" component={Home} options={{headerShown:false}}/>
+        </AppStack.Navigator>
+    )
+
     return (
         <NavigationContainer theme={MyTheme}>
-            <Stack.Navigator>
-                <Stack.Screen name="Login" component={LoginScreen} />
-                <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-            </Stack.Navigator>
+            {isUserSignedIn ? <AppStackScreen /> : <AuthStackScreen />}
         </NavigationContainer>
     )
 }

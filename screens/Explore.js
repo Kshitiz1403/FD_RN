@@ -25,10 +25,10 @@ const Explore = () => {
     const handleSignOut = () => {
         auth
             .signOut()
-            .then(() => {
-                navigation.replace("Login")
-            })
-            .catch((err) => alert(err))
+            // .then(() => {
+            //     navigation.replace("Login")
+            // })
+            // .catch((err) => alert(err))
     }
 
     let handleHostelIdentifier
