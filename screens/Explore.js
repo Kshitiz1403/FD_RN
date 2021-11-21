@@ -1,9 +1,10 @@
 import { useNavigation } from '@react-navigation/core'
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import TextCustom from '../constants/TextCustom'
 import { auth } from '../firebase'
 
-const HomeScreen = () => {
+const Explore = () => {
 
     const navigation = useNavigation()
 
@@ -16,14 +17,15 @@ const HomeScreen = () => {
     }
     return (
         <View>
-            <Text>Home Screen</Text>
+            <TextCustom>Home Screen</TextCustom>
             <TouchableOpacity onPress={handleSignOut}>
-                <Text>Sign Out</Text>
+                <TextCustom>Sign Out</TextCustom>
             </TouchableOpacity>
         </View>
     )
 }
 
-export default HomeScreen
+export default Explore
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+})

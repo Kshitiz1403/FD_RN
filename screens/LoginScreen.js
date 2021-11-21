@@ -5,23 +5,22 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import { auth } from '../firebase'
 import { firebaseConfig } from '../firebaseConfig'
 import * as firebase from 'firebase'
-import { Picker } from '@react-native-picker/picker';
 
 const LoginScreen = () => {
 
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    // const [email, setEmail] = useState('')
+    // const [password, setPassword] = useState('')
     const [phone, setPhone] = useState()
     const [otp, setOtp] = useState()
     const [verificationId, setVerificationId] = useState();
 
-    const [selectedLanguage, setSelectedLanguage] = useState()
     const navigation = useNavigation()
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             if (user) {
                 navigation.replace("Home")
+                // navigation.replace("Home")
             }
         })
         return unsubscribe
@@ -101,7 +100,7 @@ const LoginScreen = () => {
     }
 
     const recaptchaVerifier = useRef(null);
-    const attemptInvisibleVerification = false;
+    const attemptInvisibleVerification = true;
 
 
     return (
@@ -124,6 +123,7 @@ const LoginScreen = () => {
                         onChangeText={v => setPhone(v)}
                         keyboardType="number-pad"
                         style={{ width: '90%' }}
+                        maxLength={10}
                     />
                 </View>
 
@@ -133,6 +133,7 @@ const LoginScreen = () => {
                     onChangeText={v => setOtp(v)}
                     style={styles.input}
                     keyboardType="number-pad"
+                    maxLength={6}
                 />
 
                 {/* FOR EMAIL AND PASSWORD BASED AUTHENTICATION */}
@@ -224,7 +225,7 @@ const styles = StyleSheet.create({
         marginTop: 20
     },
     button: {
-        backgroundColor: 'lightblue',
+        backgroundColor: '#EA7C69',
         width: '100%',
         padding: 15,
         borderRadius: 10
@@ -238,11 +239,11 @@ const styles = StyleSheet.create({
     buttonOutline: {
         backgroundColor: 'white',
         marginTop: 5,
-        borderColor: 'lightblue',
+        borderColor: '#EA7C69',
         borderWidth: 2
     },
     buttonOutlineText: {
-        color: 'lightblue',
+        color: '#EA7C69',
         fontWeight: '700',
         fontSize: 16,
         alignSelf: 'center'
