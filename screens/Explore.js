@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/core'
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions, TextInput, LogBox } from 'react-native'
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions, TextInput } from 'react-native'
 import TextCustom from '../constants/TextCustom'
 import { auth, firestore } from '../firebase'
 import { SimpleLineIcons } from '@expo/vector-icons';
@@ -66,7 +66,7 @@ const Explore = () => {
     }
 
     const Search = () => {
-        return <View style={[styles.searchContainer, { width: useWindowDimensions().width * 0.8 }]}>
+        return <View style={[styles.searchContainer, { width: useWindowDimensions().width * 0.9 }]}>
             <Feather name="search" size={20} color={colors.light} />
             <TextInput placeholder="Search for food, restaurant, etc." placeholderTextColor={colors.text.light} style={styles.searchInput} numberOfLines={1} />
         </View>
@@ -76,7 +76,6 @@ const Explore = () => {
     })
 
     const handleSaveAddress = async () => {
-        // Implement firebase logic to save address to the firestore database
         setAddress({ roomNo: roomNumber, hostel: selectedHostel })
         toggleAddressModal()
 
@@ -86,8 +85,6 @@ const Explore = () => {
                 hostel: selectedHostel
             }
         }))
-
-
     }
     return (
         <View>
@@ -133,9 +130,6 @@ const Explore = () => {
     )
 }
 
-// Explore.navigationOptions = {
-//     headerTitle:'Test'
-// }
 
 export default Explore
 
