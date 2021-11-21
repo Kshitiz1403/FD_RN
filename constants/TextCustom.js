@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import colors from './colors'
 
 const TextCustom = (props) => {
-    return (<Text style={{ ...styles.text, ...props.style }}>
+    return (<Text style={{ ...styles.text, ...props.style }} numberOfLines={props.numberOfLines}>
         {props.children}
     </Text>
     )

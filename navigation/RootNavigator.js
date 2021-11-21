@@ -17,16 +17,16 @@ const Tab = createBottomTabNavigator();
 const Home = () => {
     return (
         <Tab.Navigator screenOptions={({ route }) => ({
-            tabBarIcon: () => {
+            tabBarIcon: ({ focused }) => {
                 let icon;
                 if (route.name === "Explore") {
-                    icon = <Entypo name="home" size={24} color={colors.primary} />
+                    icon = <Entypo name="home" size={24} color={focused ? colors.primary : colors.light} />
                 }
                 else if (route.name === "Account") {
-                    icon = <MaterialCommunityIcons name="account" size={24} color={colors.primary} />
+                    icon = <MaterialCommunityIcons name="account" size={24} color={focused ? colors.primary : colors.light} />
                 }
                 else if (route.name === "Cart") {
-                    icon = <Entypo name="shopping-bag" size={24} color={colors.primary} />
+                    icon = <Entypo name="shopping-bag" size={24} color={focused ? colors.primary : colors.light} />
                 }
                 return icon;
             }
@@ -39,10 +39,7 @@ const Home = () => {
 }
 
 const MyTheme = {
-    // ...DefaultTheme,
-    // dark:true,
     colors: {
-        // ...DefaultTheme.colors,
         primary: colors.primary,
         background: colors.background,
         card: colors.dark,

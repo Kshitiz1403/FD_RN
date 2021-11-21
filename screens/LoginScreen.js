@@ -78,7 +78,7 @@ const LoginScreen = () => {
                 recaptchaVerifier.current
             );
             setVerificationId(verificationId);
-            alert("otp has been sent")
+            alert("OTP has been sent")
             console.log(verificationId)
         } catch (err) {
             alert(err)
@@ -124,6 +124,7 @@ const LoginScreen = () => {
                         keyboardType="number-pad"
                         style={{ width: '90%' }}
                         maxLength={10}
+                        onSubmitEditing={handleSendOTP}
                     />
                 </View>
 
