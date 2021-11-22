@@ -4,9 +4,9 @@ import colors from '../constants/colors'
 
 const PrimaryButton = (props) => {
     return (
-        <TouchableOpacity onPress={props.onPress} style={[{ width: 0.4 * useWindowDimensions().width },{...props.style}]}>
-            <View style={{ width: '100%', backgroundColor: colors.primary, borderRadius: 5, height: 45, alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ textTransform: 'uppercase', color: colors.text.default, fontWeight: '700', fontSize: 15 }}>{props.text}</Text>
+        <TouchableOpacity onPress={props.onPress} style={{ ...props.style, width: 0.4 * useWindowDimensions().width }}>
+            <View style={styles.container}>
+                <Text style={styles.text}>{props.text}</Text>
             </View>
         </TouchableOpacity>
     )
@@ -14,4 +14,20 @@ const PrimaryButton = (props) => {
 
 export default PrimaryButton
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    container: {
+        width: '100%',
+        backgroundColor: colors.primary,
+        borderRadius: 5,
+        height: 45,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    text: {
+        textTransform: 'uppercase',
+        color: colors.text.default,
+        fontWeight: '700',
+        fontSize: 15
+    }
+
+})
