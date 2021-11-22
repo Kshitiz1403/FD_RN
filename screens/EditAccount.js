@@ -8,69 +8,195 @@ import { auth, firestore } from '../firebase'
 
 const EditAccount = () => {
 
-    const [nameOfUser, setNameOfUser] = useState()
+    const [nameOfUser, setNameOfUser] = useState('')
     const [email, setEmail] = useState('')
-    const [graduation, setGraduation] = useState()
+    const [graduation, setGraduation] = useState(0)
+
+    const [editName, setEditName] = useState(false)
+    const [editMail, setEditMail] = useState(false)
+    const [editGraduation, setEditGraduation] = useState(false)
 
     const UID = auth.currentUser.uid
+    const userRef = firestore.collection('users').doc(UID)
 
     useEffect(() => {
-        firestore.collection('users').doc(UID).get().then((doc => {
+        userRef.get().then((doc => {
             if (doc.data()) {
-                // 
+                if (doc.data().Name){
+                    setNameOfUser(doc.data().Name)
+                }
+                if (doc.data().Email){
+                    setEmail(doc.data().Email)
+                }
+                if (doc.data().graduationYear){
+                    setGraduation(doc.data().graduationYear)
+                }
+                console.log(doc.data())
+
+                // get initial input state from firestore
+
+                // when the user presses cancel on any form, the state should be set to the values from the firestore
             }
         })).catch((err) => console.log(err))
         return
     }, [])
 
-    const EditItem = (props) => {
-        const [edit, setEdit] = useState(false)
+    const getName = () =>{
+        userRef.get().then((doc=>{
+            if (doc.data()){
+                if (doc.data().Name){
+                    setNameOfUser(doc.data().Name)
+                }
+            }
+        }))
+    }
 
+    const getEmail = () =>{
+        userRef.get().then((doc=>{
+            if (doc.data()){
+                if (doc.data().Email){
+                    setEmail(doc.data().Email)
+                }
+            }
+        }))
+    }
 
-        // get the initial input state from the firestore
+    const getGraduation = () =>{
+        userRef.get().then((doc=>{
+            if (doc.data()){
+                if (doc.data().graduationYear){
+                    setGraduation(doc.data().graduationYear)
+                }
+            }
+        }))
+    }
 
-        const handleUpdate = () => {
-            // take the input value and store it in firestore
-            // set the setEdit(false)
-        }
-        const Buttons = () => {
-            return (
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, marginBottom: 10 }}>
-                    <PrimaryButton text="Update" onPress={() => { handleUpdate() }} />
-                    <SecondaryButton text="Cancel" onPress={() => setEdit(false)} />
-                </View>
-            )
-        }
+    const handleNameUpdate = async () => {
+        userRef.set({ Name: nameOfUser }, { merge: true })
+        .then(setEditName(false))
+        .catch((err)=>console.log("Error on updating name- ", err))
+    }
 
+    const handleMailUpdate = () => {
+        userRef.set({ Email: email }, { merge: true })
+            .then(setEditMail(false))
+            .catch((err) => console.log("Error on updating email- ", err))
+    }
+
+    const handleGraduationUpdate = () => {
+        userRef.set({graduationYear: graduation},{merge:true})
+        .then(setEditGraduation(false))
+        .catch((err) => console.log("Error on updating graduation- ", err))
+    }
+
+    const NameButtons = () => {
         return (
-            <>
-                <View style={[itemStyles.container, { borderColor: edit ? colors.primary : colors.light }]}>
-                    <View>
-                        <Text style={itemStyles.title}>{props.title}</Text>
-                    </View>
-                    <View style={itemStyles.inputContainer}>
-                        <TextInput
-                            style={itemStyles.input}
-                            value={props.value}
-                            placeholderTextColor={colors.text.default}
-                            editable={edit ? true : false}
-                            onChangeText={props.onChangeText}
-                        />
-                        <EditButton text="Edit" onPress={() => setEdit(!edit)} />
-                    </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, marginBottom: 10 }}>
+                <PrimaryButton text="Update" onPress={() => handleNameUpdate()} />
+                <SecondaryButton text="Cancel" onPress={() => {
+                    setEditName(false)
+                    getName()
+                    }} />
+            </View>
+        )
+    }
 
-                </View>
-                {edit ? <Buttons /> : null}
-            </>
+    const MailButtons = () => {
+        return (
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, marginBottom: 10 }}>
+                <PrimaryButton text="Update" onPress={() => handleMailUpdate()} />
+                <SecondaryButton text="Cancel" onPress={() => {
+                    setEditMail(false)
+                    getEmail()
+                    }} />
+            </View>
+        )
+    }
+
+    const GraduationButtons = () => {
+        return (
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, marginBottom: 10 }}>
+                <PrimaryButton text="Update" onPress={() => handleGraduationUpdate()} />
+                <SecondaryButton text="Cancel" onPress={() => {
+                    setEditGraduation(false)
+                    getGraduation()
+                    }} />
+            </View>
         )
     }
 
     return (
         <View>
 
-            <EditItem title="Name" value={nameOfUser} onChangeText={(v) => setNameOfUser(v)} />
-            <EditItem title="Email address" />
-            <EditItem title="graduation year" />
+            {/* For name */}
+            <>
+                <View style={[itemStyles.container, { borderColor: editName ? colors.primary : colors.light }]}>
+                    <View>
+                        <Text style={itemStyles.title}>Name</Text>
+                    </View>
+                    <View style={itemStyles.inputContainer}>
+                        <TextInput
+                            style={itemStyles.input}
+                            value={nameOfUser}
+                            autoComplete="name"
+                            placeholderTextColor={colors.text.default}
+                            editable={editName ? true : false}
+                            onChangeText={(v) => setNameOfUser(v)}
+                            autoCapitalize
+                        />
+                        <EditButton text="Edit" onPress={() => setEditName(!editName)} />
+                    </View>
+
+                </View>
+                {editName ? <NameButtons /> : null}
+            </>
+
+            {/* For email */}
+            <>
+                <View style={[itemStyles.container, { borderColor: editMail ? colors.primary : colors.light }]}>
+                    <View>
+                        <Text style={itemStyles.title}>Email Address</Text>
+                    </View>
+                    <View style={itemStyles.inputContainer}>
+                        <TextInput
+                            style={itemStyles.input}
+                            value={email}
+                            autoCapitalize={false}
+                            autoComplete="email"
+                            placeholderTextColor={colors.text.default}
+                            editable={editMail ? true : false}
+                            onChangeText={(v) => setEmail(v)}
+                        />
+                        <EditButton text="Edit" onPress={() => setEditMail(!editMail)} />
+                    </View>
+
+                </View>
+                {editMail ? <MailButtons /> : null}
+            </>
+
+            {/* For graduation */}
+
+            <>
+                <View style={[itemStyles.container, { borderColor: editGraduation ? colors.primary : colors.light }]}>
+                    <View>
+                        <Text style={itemStyles.title}>Graduation Year</Text>
+                    </View>
+                    <View style={itemStyles.inputContainer}>
+                        <TextInput
+                            style={itemStyles.input}
+                            value={graduation}
+                            placeholderTextColor={colors.text.default}
+                            editable={editGraduation ? true : false}
+                            onChangeText={(v) => setGraduation(v.replace(/[^0-9]/g, ''))}
+                            keyboardType={'number-pad'}
+                            maxLength={4}
+                        />
+                        <EditButton text="Edit" onPress={() => setEditGraduation(!editGraduation)} />
+                    </View>
+
+                </View>
+                {editGraduation ? <GraduationButtons /> : null}
+            </>
 
         </View>
     )
