@@ -31,11 +31,6 @@ const Explore = () => {
     const user = auth.currentUser
     const UID = user.uid
 
-    const handleSignOut = () => {
-        auth
-            .signOut()
-    }
-
     let handleHostelIdentifier
     if (address.hostel == 'girls') {
         handleHostelIdentifier = "Girls"
@@ -123,9 +118,6 @@ const Explore = () => {
                     </TouchableOpacity>
                 </View>
             </Modal>
-            <TouchableOpacity onPress={handleSignOut} style={{ marginTop: 150 }}>
-                <TextCustom>Sign Out</TextCustom>
-            </TouchableOpacity>
         </View>
     )
 }
