@@ -4,7 +4,7 @@ import colors from '../constants/colors'
 
 const SecondaryButton = (props) => {
     return (
-        <TouchableOpacity onPress={props.onPress} style={{ width: 0.4 * useWindowDimensions().width }}>
+        <TouchableOpacity onPress={props.onPress} style={[{ width: 0.4 * useWindowDimensions().width }, {...props.style}]}>
             <View style={{ width: '100%', borderRadius: 5, borderWidth: 1, borderColor: colors.primary, height: 45, alignItems: 'center', justifyContent: 'center' }}>
                 <Text style={{ textTransform: 'uppercase', color: colors.primary, fontWeight: '700', fontSize: 15, }}>{props.text}</Text>
             </View>
