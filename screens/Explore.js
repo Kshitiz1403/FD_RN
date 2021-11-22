@@ -79,7 +79,7 @@ const Explore = () => {
                 roomNumber: roomNumber,
                 hostel: selectedHostel
             }
-        }))
+        },{merge:true}))
     }
     return (
         <View>
