@@ -8,6 +8,7 @@ import colors from '../constants/colors'
 import { Feather } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 import { Picker } from '@react-native-picker/picker'
+import PrimaryButton from '../components/PrimaryButton'
 
 const Explore = () => {
 
@@ -79,7 +80,7 @@ const Explore = () => {
                 roomNumber: roomNumber,
                 hostel: selectedHostel
             }
-        },{merge:true}))
+        }, { merge: true }))
     }
     return (
         <View>
@@ -110,12 +111,7 @@ const Explore = () => {
                         <Picker.Item label="Boys(Old)" value="boys1" />
                         <Picker.Item label="Boys(New)" value="boys2" />
                     </Picker>
-                    <TouchableOpacity
-                        onPress={handleSaveAddress}
-                        style={styles.button}
-                    >
-                        <Text style={styles.buttonText}>Save Address</Text>
-                    </TouchableOpacity>
+                    <PrimaryButton text="Save Address" onPress={handleSaveAddress} />
                 </View>
             </Modal>
         </View>
@@ -156,20 +152,5 @@ const styles = StyleSheet.create({
         borderBottomColor: colors.text.light,
         width: '70%',
         marginBottom: 20
-    },
-    button: {
-        backgroundColor: '#EA7C69',
-        // width: '60%',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 10
-    },
-    buttonText: {
-        color: 'white',
-        fontWeight: '500',
-        fontSize: 15,
-        alignSelf: 'center',
-    },
-
-
+    }
 })
