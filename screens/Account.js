@@ -9,17 +9,23 @@ import { auth, firestore } from '../firebase';
 
 const Account = () => {
 
+    const [update, setUpdate] = useState(false)
+
     const UID = auth.currentUser.uid
     const userRef = firestore.collection('users').doc(UID)
 
-    const [phone, setPhone] = useState()
-    const [email, setEmail] = useState()
-    const [graduation, setGraduation] = useState()
+    const [nameOfUser, setNameOfUser] = useState('Hello user')
+    const [phone, setPhone] = useState(9999999999)
+    const [email, setEmail] = useState('user@comapny.com')
+    const [graduation, setGraduation] = useState(1999)
 
     useEffect(() => {
         userRef.get().then((doc => {
             if (doc.data()) {
                 setPhone(auth.currentUser.phoneNumber)
+                if(doc.data().Name){
+                    setNameOfUser(doc.data().Name)
+                }
                 if (doc.data().Email) {
                     setEmail(doc.data().Email)
                 }
@@ -27,20 +33,38 @@ const Account = () => {
                     setGraduation(doc.data().graduationYear)
                 }
                 console.log(doc.data())
+                setUpdate(false)
 
                 // get initial input state from firestore
             }
         })).catch((err) => console.log(err))
         return
-    }, [])
+    }, [update!=false])
+
+    const handleSignOut = () => {
+        auth
+            .signOut()
+    }
 
     const navigation = useNavigation()
+
+    const Item = (props) => {
+        return (
+            <View onPress={props.onPress} style={[generalInfoStyles.container, { borderColor: colors.light, borderBottomWidth:0, paddingVertical:15}]}>
+                <TouchableOpacity onPress={props.onPress}>
+                    <Text style={styles.itemText}>{props.text}</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
     const GeneralInfo = () => {
         return (
-            <View style={generalInfoStyles.container}>
+            <View style={[generalInfoStyles.container]}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 2, paddingVertical: 5 }}>
-                    <TextCustom style={{ textTransform: 'uppercase', fontSize: 18, fontWeight: '700' }}>Kshitiz Agrawal</TextCustom>
-                    <EditButton text="Edit" onPress={() => navigation.navigate('Edit_Account')} />
+                    <TextCustom style={{ textTransform: 'uppercase', fontSize: 18, fontWeight: '700' }}>{nameOfUser}</TextCustom>
+                    <EditButton text="Edit" onPress={() => navigation.navigate('Edit_Account',{
+                        toUpdate:setUpdate
+                    })} />
                 </View>
                 <ScrollView horizontal>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -57,7 +81,8 @@ const Account = () => {
     return (
         <View>
             <GeneralInfo />
-            {/* <Text></Text> */}
+            <Item text="Orders"  />
+            <Item text="Logout" onPress={() => handleSignOut()} />
         </View>
     )
 }
@@ -66,11 +91,18 @@ export default Account
 
 const generalInfoStyles = StyleSheet.create({
     container: {
-        borderBottomWidth: 1,
+        borderBottomWidth: 3,
         borderColor: colors.primary,
-        marginHorizontal: 10,
-        paddingVertical: 10
+        paddingHorizontal: 10,
+        paddingVertical: 10,
+        marginBottom:10,
+        backgroundColor:colors.dark
     }
 })
 const styles = StyleSheet.create({
+    itemText:{
+        color: colors.text.default,
+        textTransform:'uppercase',
+        fontWeight:'700'
+    }
 })

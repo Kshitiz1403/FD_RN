@@ -6,7 +6,9 @@ import SecondaryButton from '../components/SecondaryButton'
 import colors from '../constants/colors'
 import { auth, firestore } from '../firebase'
 
-const EditAccount = () => {
+const EditAccount = ({route, navigation}) => {
+
+    const {toUpdate} = route.params
 
     const [nameOfUser, setNameOfUser] = useState('')
     const [email, setEmail] = useState('')
@@ -73,19 +75,19 @@ const EditAccount = () => {
 
     const handleNameUpdate = async () => {
         userRef.set({ Name: nameOfUser }, { merge: true })
-        .then(setEditName(false))
+        .then(()=>{setEditName(false); toUpdate(true)})
         .catch((err)=>console.log("Error on updating name- ", err))
     }
 
     const handleMailUpdate = () => {
         userRef.set({ Email: email }, { merge: true })
-            .then(setEditMail(false))
+            .then(()=>{setEditMail(false); toUpdate(true)})
             .catch((err) => console.log("Error on updating email- ", err))
     }
 
     const handleGraduationUpdate = () => {
         userRef.set({graduationYear: graduation},{merge:true})
-        .then(setEditGraduation(false))
+        .then(()=>{setEditGraduation(false); toUpdate(true)})
         .catch((err) => console.log("Error on updating graduation- ", err))
     }
 
@@ -142,7 +144,7 @@ const EditAccount = () => {
                             placeholderTextColor={colors.text.default}
                             editable={editName ? true : false}
                             onChangeText={(v) => setNameOfUser(v)}
-                            autoCapitalize
+                            autoCapitalize="words"
                         />
                         <EditButton text="Edit" onPress={() => setEditName(!editName)} />
                     </View>
@@ -161,7 +163,7 @@ const EditAccount = () => {
                         <TextInput
                             style={itemStyles.input}
                             value={email}
-                            autoCapitalize={false}
+                            autoCapitalize="none"
                             autoComplete="email"
                             placeholderTextColor={colors.text.default}
                             editable={editMail ? true : false}
