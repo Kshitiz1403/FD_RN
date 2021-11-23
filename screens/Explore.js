@@ -1,9 +1,10 @@
 import { useNavigation } from '@react-navigation/core'
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions, TextInput } from 'react-native'
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions, TextInput, Image, FlatList } from 'react-native'
 import TextCustom from '../constants/TextCustom'
 import { auth, firestore } from '../firebase'
 import { SimpleLineIcons } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 import colors from '../constants/colors'
 import { Feather } from '@expo/vector-icons';
 import Modal from "react-native-modal";
@@ -15,6 +16,9 @@ const Explore = () => {
     const [selectedHostel, setSelectedHostel] = useState()
     const [roomNumber, setRoomNumber] = useState()
     const [address, setAddress] = useState({ roomNo: NaN, hostel: null })
+    const [restaurants, setRestaurants] = useState([])
+    const [isAddressModalVisible, setIsAddressModalVisible] = useState(false)
+    const [count, setCount] = useState(0)
 
     useEffect(() => {
         firestore.collection('users').doc(UID).get().then((doc => {
@@ -24,8 +28,11 @@ const Explore = () => {
         })).catch((err) => console.log(err))
         return
     }, [])
+    useEffect(() => {
+        getRestaurants()
+        return
+    }, [])
 
-    const [isAddressModalVisible, setIsAddressModalVisible] = useState(false)
 
     const navigation = useNavigation()
 
@@ -46,6 +53,19 @@ const Explore = () => {
         handleHostelIdentifier = NaN
     }
 
+
+    let restaurantArray = []
+    const getRestaurants = () => {
+        firestore.collection('restaurants').get()
+            .then((querySnapshot) => {
+                querySnapshot.forEach(documentSnapshot => {
+                    restaurantArray.push(documentSnapshot.data())
+                    setCount(count + 1)
+                    // Removing the setCount somehow disarms the function and hence is necessary for it work
+                })
+            })
+            .then(setRestaurants(restaurantArray))
+    }
     const DeliverTo = () => {
         return (
             <View>
@@ -62,7 +82,7 @@ const Explore = () => {
     }
 
     const Search = () => {
-        return <View style={[styles.searchContainer, { width: useWindowDimensions().width * 0.9 }]}>
+        return <View style={[styles.searchContainer]}>
             <Feather name="search" size={20} color={colors.light} />
             <TextInput placeholder="Search for food, restaurant, etc." placeholderTextColor={colors.text.light} style={styles.searchInput} numberOfLines={1} />
         </View>
@@ -82,8 +102,33 @@ const Explore = () => {
             }
         }, { merge: true }))
     }
+
+    const RestaurantItem = (props) => {
+        return (
+            <TouchableOpacity activeOpacity={0.7} onPress={props.onPress} style={[restaurantStyles.container, { width: useWindowDimensions().width }]}>
+                <View style={restaurantStyles.imageContainer}>
+                    <Image source={{ uri: props.imageURI }} style={restaurantStyles.image} />
+                </View>
+                <View style={restaurantStyles.detailsContainer}>
+                    <Text numberOfLines={1} style={[restaurantStyles.titleText, { color: colors.text.default, }]}>{props.name}</Text>
+                    <View style={[restaurantStyles.ratingContainer,]}>
+                        <Entypo name="star" size={16} color={colors.light} style={{ marginRight: 5 }} />
+                        <View>
+                            <Text style={restaurantStyles.rating}>{props.rating ? props.rating : "Not available"}</Text>
+                        </View>
+                    </View>
+                    <View>
+                        <Text numberOfLines={1} style={restaurantStyles.cuisines}>
+                            {props.cuisines}
+                        </Text>
+                    </View>
+                </View>
+            </TouchableOpacity>
+        )
+    }
+
     return (
-        <View>
+        <View style={styles.container}>
             <View style={{ alignItems: 'center', marginTop: 10 }}>
                 <Search />
             </View>
@@ -114,6 +159,13 @@ const Explore = () => {
                     <PrimaryButton text="Save Address" onPress={handleSaveAddress} />
                 </View>
             </Modal>
+
+            <FlatList
+                showsHorizontalScrollIndicator={false}
+                data={restaurants}
+                renderItem={({ item }) => <RestaurantItem name={item.restaurantName} rating={item.rating} cuisines={item.cuisines} imageURI={item.imageURI} />}
+                keyExtractor={item => item.restaurantName}
+            />
         </View>
     )
 }
@@ -122,6 +174,10 @@ const Explore = () => {
 export default Explore
 
 const styles = StyleSheet.create({
+    container: {
+        marginHorizontal: 10,
+        flex: 1
+    },
     heading: {
         fontSize: 28
     },
@@ -133,6 +189,7 @@ const styles = StyleSheet.create({
         padding: 10,
         paddingHorizontal: 15,
         alignItems: 'center',
+        width:'100%'
     },
     searchInput: {
         marginHorizontal: 20
@@ -152,5 +209,50 @@ const styles = StyleSheet.create({
         borderBottomColor: colors.text.light,
         width: '70%',
         marginBottom: 20
+    },
+    restaurantContainer: {
+        height: 100,
+        marginVertical: 10,
+        flexDirection: 'row'
     }
+})
+
+const restaurantStyles = StyleSheet.create({
+    container: {
+        height: 100,
+        marginVertical: 10,
+        flexDirection: 'row'
+    },
+    imageContainer: {
+        height: '100%',
+        width: '25%'
+    },
+    image: {
+        height: '100%',
+        width: '100%',
+        borderRadius: 5
+    },
+    detailsContainer: {
+        height: '100%', width: '75%',
+        justifyContent: 'center',
+        padding: 20
+    },
+    titleText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    ratingContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 2
+    },
+    rating: {
+        color: colors.light,
+        fontWeight: '700',
+        fontSize: 12
+    },
+    cuisines: {
+        color: colors.light
+    }
+
 })
