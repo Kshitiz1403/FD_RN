@@ -12,13 +12,14 @@ import Cart from '../screens/Cart'
 import colors from '../constants/colors'
 import { auth } from '../firebase'
 import EditAccount from '../screens/EditAccount'
+import RestaurantScreen from '../screens/RestaurantScreen'
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator();
 
 const Home = () => {
     return (
-        <Tab.Navigator detachInactiveScreens={false} screenOptions={({ route }) => ({
+        <Tab.Navigator screenOptions={({ route }) => ({
             tabBarIcon: ({ focused }) => {
                 let icon;
                 if (route.name === "Explore") {
@@ -41,7 +42,7 @@ const Home = () => {
 }
 
 const MyTheme = {
-    dark:true,
+    dark: true,
     colors: {
         ...DefaultTheme.colors,
         primary: colors.primary,
@@ -69,16 +70,19 @@ const RootNavigator = () => {
     const AuthStack = createNativeStackNavigator()
     const AuthStackScreen = () => (
         <AuthStack.Navigator>
-            <AuthStack.Screen name="Login" component={LoginScreen}/>
+            <AuthStack.Screen name="Login" component={LoginScreen} />
         </AuthStack.Navigator>
     )
 
     const AppStack = createNativeStackNavigator()
     const AppStackScreen = () => (
-        <AppStack.Navigator screenOptions={{cardStyle:{backgroundColor:colors.dark, opacity:1}, animationEnabled:false}}>
-            <AppStack.Screen name="Home" component={Home} options={{headerShown:false}}/>
-            <AppStack.Screen name="Edit_Account" component={EditAccount} options={{title:"Edit Account"}}/>
-        </AppStack.Navigator>
+        <View style={{ backgroundColor: colors.background, flex: 1 }}>
+            <AppStack.Navigator >
+                <AppStack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+                <AppStack.Screen name="Edit_Account" component={EditAccount} options={{ title: "Edit Account" }} />
+                <AppStack.Screen name="Restaurant_Screen" component={RestaurantScreen} />
+            </AppStack.Navigator>
+        </View>
     )
 
     return (
