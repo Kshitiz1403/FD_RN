@@ -59,7 +59,7 @@ const Explore = () => {
         firestore.collection('restaurants').get()
             .then((querySnapshot) => {
                 querySnapshot.forEach(documentSnapshot => {
-                    restaurantArray.push(documentSnapshot.data())
+                    restaurantArray.push({ ...documentSnapshot.data(), id: documentSnapshot.id })
                     setCount(count + 1)
                     // Removing the setCount somehow disarms the function and hence is necessary for it work
                 })
@@ -97,7 +97,7 @@ const Explore = () => {
 
         await (firestore.collection('users').doc(UID).set({
             address: {
-                roomNumber: roomNumber,
+                roomNumber: parseInt(roomNumber),
                 hostel: selectedHostel
             }
         }, { merge: true }))
@@ -105,7 +105,7 @@ const Explore = () => {
 
     const RestaurantItem = (props) => {
         return (
-            <TouchableOpacity activeOpacity={0.7} onPress={props.onPress} style={[restaurantStyles.container, { width: useWindowDimensions().width }]}>
+            <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('Restaurant_Screen', { restaurantID: props.id, restaurantName: props.name, rating: props.rating, cuisines: props.cuisines })} style={[restaurantStyles.container, { width: useWindowDimensions().width }]}>
                 <View style={restaurantStyles.imageContainer}>
                     <Image source={{ uri: props.imageURI }} style={restaurantStyles.image} />
                 </View>
@@ -163,8 +163,8 @@ const Explore = () => {
             <FlatList
                 showsHorizontalScrollIndicator={false}
                 data={restaurants}
-                renderItem={({ item }) => <RestaurantItem name={item.restaurantName} rating={item.rating} cuisines={item.cuisines} imageURI={item.imageURI} />}
-                keyExtractor={item => item.restaurantName}
+                renderItem={({ item }) => <RestaurantItem name={item.restaurantName} rating={item.rating} cuisines={item.cuisines} imageURI={item.imageURI} id={item.id} />}
+                keyExtractor={item => item.id}
             />
         </View>
     )
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
         padding: 10,
         paddingHorizontal: 15,
         alignItems: 'center',
-        width:'100%'
+        width: '100%'
     },
     searchInput: {
         marginHorizontal: 20
