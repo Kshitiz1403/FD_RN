@@ -12,7 +12,7 @@ const EditAccount = ({route, navigation}) => {
 
     const [nameOfUser, setNameOfUser] = useState('')
     const [email, setEmail] = useState('')
-    const [graduation, setGraduation] = useState(0)
+    const [graduation, setGraduation] = useState('')
 
     const [editName, setEditName] = useState(false)
     const [editMail, setEditMail] = useState(false)
@@ -86,7 +86,7 @@ const EditAccount = ({route, navigation}) => {
     }
 
     const handleGraduationUpdate = () => {
-        userRef.set({graduationYear: graduation},{merge:true})
+        userRef.set({graduationYear: parseInt(graduation)},{merge:true})
         .then(()=>{setEditGraduation(false); toUpdate(true)})
         .catch((err) => console.log("Error on updating graduation- ", err))
     }
@@ -186,7 +186,7 @@ const EditAccount = ({route, navigation}) => {
                     <View style={itemStyles.inputContainer}>
                         <TextInput
                             style={itemStyles.input}
-                            value={graduation}
+                            value={graduation.toString()}
                             placeholderTextColor={colors.text.default}
                             editable={editGraduation ? true : false}
                             onChangeText={(v) => setGraduation(v.replace(/[^0-9]/g, ''))}
