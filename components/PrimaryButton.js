@@ -6,9 +6,9 @@ const PrimaryButton = (props) => {
     return (
         <>
             {Platform.OS == "android" ?
-                <View style={styles.androidContainer}>
+                <View style={[styles.androidContainer, { ...props.style, width: 0.4 * useWindowDimensions().width }]}>
                     <Pressable android_ripple={{ color: colors.text.default }}
-                        style={[{ ...props.style, width: 0.4 * useWindowDimensions().width }, styles.androidPressable]}
+                        style={styles.androidPressable}
                         onPress={props.onPress}>
                         <View style={styles.container}>
                             <Text style={styles.text}>{props.text}</Text>
