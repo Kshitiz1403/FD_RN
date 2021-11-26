@@ -33,7 +33,6 @@ const EditAccount = ({route, navigation}) => {
                 if (doc.data().graduationYear){
                     setGraduation(doc.data().graduationYear)
                 }
-                console.log(doc.data())
 
                 // get initial input state from firestore
 

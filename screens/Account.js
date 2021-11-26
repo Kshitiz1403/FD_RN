@@ -32,7 +32,7 @@ const Account = () => {
                 if (doc.data().graduationYear) {
                     setGraduation(doc.data().graduationYear)
                 }
-                console.log(doc.data())
+                // console.log(doc.data())
                 setUpdate(false)
 
                 // get initial input state from firestore
