@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { FlatList, Image, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { FlatList, Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import colors from "../constants/colors";
-import { firestore } from "../firebase";
-import { AntDesign } from '@expo/vector-icons';
+import { auth, firestore } from "../firebase";
+import DishItem from "../components/DishItem";
 
 const RestaurantScreen = ({ route, navigation }) => {
     const { restaurantID, restaurantName } = route.params;
@@ -10,25 +10,95 @@ const RestaurantScreen = ({ route, navigation }) => {
         headerTitle: restaurantName,
     });
 
-    dishesArr = []
-    useEffect(() => {
-        getDishes()
-        return
-    }, [])
 
+
+    // cartPriceHandler()
     // Build a logic to fetch cart items from the database at initial render
-    // Build a logic to store the cart items to the database
+    const UID = auth.currentUser.uid
 
     const [dishes, setDishes] = useState([])
 
     const [cartDishes, setCartDishes] = useState([])
+    const [doNotRemoveState, setDoNotRemoveState] = useState(0)
+
     const [cartPrice, setCartPrice] = useState(0)
 
-    const addToCart = (id, price) => {
-        setCartDishes([...cartDishes, id])
-        setCartPrice(cartPrice + price)
+    // getting the dishes which are added in the cart
+    useEffect(() => {
+        getDishes()
+        getCart()
+        return
+    }, [])
+
+    // Gets the array of dishIDs and cart total present in the cart
+    const getCart = () => {
+        firestore.collection('users').doc(UID).get()
+            .then((doc) => {
+                if (doc.data().cart.restaurantID == restaurantID) {
+                    setCartDishes(doc.data().cart.dishes)
+                    setCartPrice(doc.data().cart.cartTotal)
+                }
+            })
     }
 
+    // Updates the cart details like dishes array, cart total, restaurantID in the database 
+    const updateCart = async () => {
+        firestore.collection('users').doc(UID).set({
+            cart: {
+                dishes: cartDishes,
+                restaurantID: restaurantID,
+                cartTotal: cartPrice
+            }
+        }, { merge: true })
+
+        // add a logic to change a state to update cart screen every time that state changes i.e. every time we update Cart
+    }
+
+    // triggers every time we add an item to the cart
+    const addToCart = (id, price) => {
+        setDoNotRemoveState(doNotRemoveState + price)
+        // Do not remove setDoNotRemoveState as it breaks the functionality even if it not in use
+        let arr = cartDishes
+        arr.push(id)
+        setCartDishes(arr)
+        updateCart()
+        cartPriceHandler()
+    }
+
+    // Method for getting the cart total amount, updates the state, updates cart total in the database
+    const cartPriceHandler = () => {
+        let frequency = {}
+        for (let num of cartDishes) {
+            frequency[num] = frequency[num] ? frequency[num] + 1 : 1
+        }
+        // This gives me frequency of cart Items as {"dishID": occurrences, "anotherDishID": occurrences }
+
+        let priceObj = {}
+        dishes.forEach(el => {
+            priceObj[el.dishID] = el.price
+        })
+        // This gives me priceObj as {"dishID":itsPrice, "anotherDishID":itsPrice}
+        let price = 0
+        for (let i in priceObj) {
+            for (let j in frequency) {
+                if (j == i) {
+                    price += (priceObj[i] * frequency[j])
+                }
+            }
+        }
+        setCartPrice(price)
+
+        // Seems similar to updateCart but is not. It uses a local variable instead of a state variable to update cart total to the database 
+        firestore.collection('users').doc(UID).set({
+            cart: {
+                dishes: cartDishes,
+                restaurantID: restaurantID,
+                cartTotal: price
+            }
+        }, { merge: true })
+    }
+    
+    // triggers every time we remove an item to the cart
     const removeFromCart = (id, price) => {
         let removeDishes = cartDishes
         let index = removeDishes.indexOf(id)
@@ -36,75 +106,46 @@ const RestaurantScreen = ({ route, navigation }) => {
             removeDishes.splice(index, 1)
         }
         setCartDishes(removeDishes)
-        setCartPrice(cartPrice - price)
+        // Do not remove setDoNotRemoveState as it breaks the functionality even if it not in use
+        setDoNotRemoveState(doNotRemoveState - price)
+        updateCart()
+        cartPriceHandler()
     }
 
+    // Method for getting the amount of same dishes in the cart => returns a number
     const getQuantity = (id) => {
-        let arr = cartDishes
+        let array = []
+        for (var i of cartDishes) {
+            array.push(i)
+        }
         let count = {}
-        for (let num of arr) {
+        for (let num of array) {
             count[num] = count[num] ? count[num] + 1 : 1
         }
         return (count[id])
     }
 
+    // gets all the dishes from the restaurant and updates the state to an array of dishIDs
     const getDishes = () => {
         firestore.collection('restaurants').doc(restaurantID).get().then((querySnapshot) => {
-            dishesArr = (querySnapshot.data().dishes)
+            let dishesArr = (querySnapshot.data().dishes)
             setDishes(dishesArr)
         })
     }
-
-    const DishItem = (props) => (
-        <View style={[dishStyles.container, { height: props.image ? 150 : 100 }]}>
-            <View style={dishStyles.detailsContainer}>
-                <View style={dishStyles.vegIndicatorContainer}>
-                    {props.isNonVeg ?
-                        <Image source={require('../assets/nonveg.png')} style={dishStyles.vegIndicator} /> :
-                        <Image source={require('../assets/veg.png')} style={dishStyles.vegIndicator} />
-                    }
-                </View>
-                <View style={dishStyles.detailsText}>
-                    <Text style={dishStyles.dishText}>{props.dishName}</Text>
-                    <Text style={dishStyles.dishPrice}>₹{props.price}</Text>
-                    <Text style={dishStyles.description} numberOfLines={2} >{props.description}</Text>
-                </View>
-            </View>
-            <View style={[dishStyles.imageContainer, { justifyContent: props.image ? 'flex-end' : 'center' }]}>
-                <Image source={{ uri: props.image }} style={dishStyles.image} />
-
-                <View style={dishStyles.button}>
-                    {!cartDishes.includes(props.id) ?
-                        Platform.OS == "android" ?
-                            <Pressable style={dishStyles.addButton} android_ripple={{ color: colors.primary }} onPress={() => addToCart(props.id, props.price)}>
-                                <Text style={dishStyles.addText}>Add</Text>
-                            </Pressable>
-                            :
-                            <TouchableOpacity style={dishStyles.addButton} onPress={() => addToCart(props.id, props.price)}>
-                                <Text style={dishStyles.addText}>Add</Text>
-                            </TouchableOpacity>
-                        :
-                        <View style={dishStyles.addRemoveContainer}>
-                            <TouchableOpacity style={dishStyles.plusMinusButton} onPress={() => removeFromCart(props.id, props.price)}>
-                                <AntDesign name="minus" size={16} color={colors.text.dark} />
-                            </TouchableOpacity>
-                            <Text style={dishStyles.quantityText}>{getQuantity(props.id)}{/* dynamically change quantity, no of occurence of id in the array cartDishes */}</Text>
-                            <TouchableOpacity style={dishStyles.plusMinusButton} onPress={() => addToCart(props.id, props.price)} /* on Press, push the item id to the array*/>
-                                <AntDesign name="plus" size={16} color={colors.text.dark} />
-                            </TouchableOpacity>
-                        </View>
-                    }
-                </View>
-            </View>
-        </View>
-    );
 
     const Cart = () => <View style={[cartStyles.container,
     { display: cartDishes.length == 0 ? "none" : "flex" }
     ]}>
         {Platform.OS == "android"
             ?
-            <Pressable android_ripple={{ color: colors.text.default, }} style={cartStyles.subContainer}>
+            <Pressable onPress={() => {
+                navigation.navigate('Cart', {
+                    cartDishes: cartDishes,
+                    cartPrice: cartPrice,
+                    restaurantName: restaurantName,
+                    restaurantID: restaurantID
+                })
+            }} android_ripple={{ color: colors.text.default, }} style={cartStyles.subContainer}>
                 <View>
                     <Text style={cartStyles.detailsText}>{cartDishes.length} Item{cartDishes.length == 1 ? '' : 's'} {/*'s' only when more than one items*/} |  ₹{cartPrice}</Text>
                 </View>
@@ -113,7 +154,14 @@ const RestaurantScreen = ({ route, navigation }) => {
                 </View>
             </Pressable>
             :
-            <TouchableOpacity style={cartStyles.subContainer}>
+            <TouchableOpacity onPress={() => {
+                navigation.navigate('Cart', {
+                    cartDishes: cartDishes,
+                    cartPrice: cartPrice,
+                    restaurantName: restaurantName,
+                    restaurantID: restaurantID
+                })
+            }} style={cartStyles.subContainer}>
                 <View>
                     <Text style={cartStyles.detailsText}>{cartDishes.length} Item{cartDishes.length == 1 ? '' : 's'} {/*'s' only when more than one items*/} |  ₹{cartPrice}</Text>
                 </View>
@@ -128,14 +176,27 @@ const RestaurantScreen = ({ route, navigation }) => {
     </View>
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <FlatList
                 data={dishes}
-                renderItem={({ item }) => <DishItem dishName={item.name} isNonVeg={item.nonveg} price={item.price} description={item.description} image={item.imageURI} id={item.dishID} />}
+                renderItem={({ item }) =>
+                    <DishItem
+                        cartDishes={cartDishes}
+                        dishName={item.name}
+                        isNonVeg={item.nonveg}
+                        getQuantity={getQuantity(item.dishID)}
+                        price={item.price}
+                        description={item.description}
+                        image={item.imageURI}
+                        id={item.dishID}
+                        addToCart={() => addToCart(item.dishID, item.price)}
+                        removeFromCart={() => removeFromCart(item.dishID, item.price)}
+                    />
+                }
                 keyExtractor={item => item.dishID}
             />
             <Cart />
-        </View>
+        </SafeAreaView>
     );
 };
 
@@ -148,90 +209,6 @@ const styles = StyleSheet.create({
     },
 });
 
-const dishStyles = StyleSheet.create({
-    container: {
-        flexDirection: "row",
-        borderBottomWidth: 0.5,
-        paddingVertical: 10,
-        borderColor: colors.light,
-    },
-    detailsContainer: {
-        width: "65%",
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    vegIndicatorContainer: {
-        marginRight: 12,
-    },
-    vegIndicator: {
-        height: 20,
-        width: 20,
-    },
-    detailsText: {
-        flex: 1
-    },
-    dishText: {
-        color: colors.text.default,
-        fontWeight: 'bold',
-        fontSize: 16
-    },
-    dishPrice: {
-        color: colors.text.light
-    },
-    description: {
-        color: colors.text.light,
-        fontSize: 10
-    },
-    imageContainer: {
-        width: "35%",
-        alignItems: 'center',
-    },
-    image: {
-        width: '100%',
-        height: '100%',
-        borderRadius: 10
-    },
-    button: {
-        position: 'absolute',
-        backgroundColor: colors.text.default,
-        width: '60%',
-        borderRadius: 5,
-        height: 30,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderColor: colors.primary,
-        borderWidth: 1.5,
-    },
-    addButton: {
-        width: '100%',
-        alignItems: 'center',
-        height: '100%',
-        justifyContent: 'center'
-    },
-    addRemoveContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        alignItems: 'center',
-        height: '100%'
-    },
-    plusMinusButton: {
-        height: '100%', flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    quantityText: {
-        flex: 0.7,
-        textAlign: 'center',
-        color: colors.text.dark,
-    },
-    addText: {
-        color: colors.primary,
-        fontWeight: '700',
-        textTransform: 'uppercase'
-    }
-
-});
 
 const cartStyles = StyleSheet.create({
     container: {
