@@ -97,7 +97,7 @@ const RestaurantScreen = ({ route, navigation }) => {
             }
         }, { merge: true })
     }
-    
+
     // triggers every time we remove an item to the cart
     const removeFromCart = (id, price) => {
         let removeDishes = cartDishes
@@ -139,12 +139,7 @@ const RestaurantScreen = ({ route, navigation }) => {
         {Platform.OS == "android"
             ?
             <Pressable onPress={() => {
-                navigation.navigate('Cart', {
-                    cartDishes: cartDishes,
-                    cartPrice: cartPrice,
-                    restaurantName: restaurantName,
-                    restaurantID: restaurantID
-                })
+                navigation.navigate('Cart')
             }} android_ripple={{ color: colors.text.default, }} style={cartStyles.subContainer}>
                 <View>
                     <Text style={cartStyles.detailsText}>{cartDishes.length} Item{cartDishes.length == 1 ? '' : 's'} {/*'s' only when more than one items*/} |  ₹{cartPrice}</Text>
@@ -155,12 +150,7 @@ const RestaurantScreen = ({ route, navigation }) => {
             </Pressable>
             :
             <TouchableOpacity onPress={() => {
-                navigation.navigate('Cart', {
-                    cartDishes: cartDishes,
-                    cartPrice: cartPrice,
-                    restaurantName: restaurantName,
-                    restaurantID: restaurantID
-                })
+                navigation.navigate('Cart')
             }} style={cartStyles.subContainer}>
                 <View>
                     <Text style={cartStyles.detailsText}>{cartDishes.length} Item{cartDishes.length == 1 ? '' : 's'} {/*'s' only when more than one items*/} |  ₹{cartPrice}</Text>
