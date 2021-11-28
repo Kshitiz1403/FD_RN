@@ -32,10 +32,10 @@ const Cart = ({ route, navigation }) => {
         navigation.setOptions({
             tabBarBadge: cartDishIDs.length
         })
-        if(cartDishIDs.length!=0){
+        if (cartDishIDs.length != 0) {
             setIsCartEmpty(false)
         }
-        else{
+        else {
             setIsCartEmpty(true)
         }
     }, [cartDishIDs])
@@ -187,8 +187,12 @@ const Cart = ({ route, navigation }) => {
 
     return (<>
         {isCartEmpty ?
-            <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-                <LottieView source={require('../assets/animations/emptyCart.json')} autoPlay loop style={{ width: '90%' }} />
+            <View style={emptyCartStyles.container}>
+                <LottieView source={require('../assets/animations/emptyCart.json')} autoPlay loop style={emptyCartStyles.animation} />
+                <View style={emptyCartStyles.textContainer}>
+                    <Text style={emptyCartStyles.text}>{`My stomach is empty.`}</Text>
+                    <Text style={emptyCartStyles.text}>{`Please add some items in it!`}</Text>
+                </View>
             </View>
             :
             <View style={styles.container}>
@@ -274,5 +278,20 @@ const restaurantStyles = StyleSheet.create({
     },
     cuisines: {
         color: colors.light
+    }
+})
+
+const emptyCartStyles = StyleSheet.create({
+    container:{
+        justifyContent: 'center', alignItems: 'center', flex: 1
+    },
+    animation:{
+        width: '90%'
+    },
+    textContainer:{
+        alignItems:'center'
+    },
+    text:{
+        color: colors.text.light, fontSize: 18, fontWeight: '700', width: '70%'
     }
 })
