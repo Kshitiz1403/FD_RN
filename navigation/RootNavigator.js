@@ -13,13 +13,14 @@ import colors from '../constants/colors'
 import { auth, firestore } from '../firebase'
 import EditAccount from '../screens/EditAccount'
 import RestaurantScreen from '../screens/RestaurantScreen'
-import { useNavigation } from '@react-navigation/core';
+import { useIsFocused, useNavigation } from '@react-navigation/core';
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator();
 const Home = () => {
 
     const navigation = useNavigation()
+    const isFocused = useIsFocused()
 
     const UID = auth.currentUser.uid
     const [badgeNumber, setBadgeNumber] = useState(0)
@@ -37,7 +38,7 @@ const Home = () => {
 
         // Return the function to unsubscribe from the event so it gets removed on unmount
         return unsubscribe;
-    }, [navigation]);
+    }, [isFocused]);
 
     return (
         <Tab.Navigator screenOptions={({ route }) => ({
