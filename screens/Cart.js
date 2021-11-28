@@ -5,6 +5,7 @@ import { auth, firestore } from '../firebase';
 import { useIsFocused, useNavigation } from '@react-navigation/core';
 import DishItem from '../components/DishItem';
 import { Entypo } from '@expo/vector-icons';
+import LottieView from 'lottie-react-native';
 
 const Cart = ({ route, navigation }) => {
     const UID = auth.currentUser.uid
@@ -18,6 +19,7 @@ const Cart = ({ route, navigation }) => {
     const [restaurantData, setRestaurantData] = useState({})
     const [uniqueAllCartDishesData, setUniqueAllCartDishesData] = useState([])
     const [cartPrice, setCartPrice] = useState(0)
+    const [isCartEmpty, setIsCartEmpty] = useState(true)
 
 
     // re- renders every time the screen is brought to focus 
@@ -30,6 +32,12 @@ const Cart = ({ route, navigation }) => {
         navigation.setOptions({
             tabBarBadge: cartDishIDs.length
         })
+        if(cartDishIDs.length!=0){
+            setIsCartEmpty(false)
+        }
+        else{
+            setIsCartEmpty(true)
+        }
     }, [cartDishIDs])
 
     // fetches the IDs of dishes in the cart and stores in a state variable
@@ -177,28 +185,35 @@ const Cart = ({ route, navigation }) => {
         </View>
     )
 
-    return (
-        <View style={styles.container}>
-            <RestaurantDetails />
-            <FlatList
-                style={{ backgroundColor: colors.dark, paddingHorizontal: 10 }}
-                data={uniqueAllCartDishesData}
-                keyExtractor={item => item.dishID}
-                renderItem={({ item }) => (
-                    <DishItem
-                        cartDishes={cartDishIDs}
-                        dishName={item.name}
-                        id={item.dishID}
-                        price={item.price}
-                        isNonVeg={item.nonveg}
-                        getQuantity={getQuantity(item.dishID)}
-                        removeFromCart={() => removeFromCart(item.dishID)}
-                        addToCart={() => addToCart(item.dishID)}
-                    />
-                )}
-            />
-            <Text>{cartPrice}</Text>
-        </View>
+    return (<>
+        {isCartEmpty ?
+            <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+                <LottieView source={require('../assets/animations/emptyCart.json')} autoPlay loop style={{ width: '90%' }} />
+            </View>
+            :
+            <View style={styles.container}>
+                <RestaurantDetails />
+                <FlatList
+                    style={{ backgroundColor: colors.dark, paddingHorizontal: 10 }}
+                    data={uniqueAllCartDishesData}
+                    keyExtractor={item => item.dishID}
+                    renderItem={({ item }) => (
+                        <DishItem
+                            cartDishes={cartDishIDs}
+                            dishName={item.name}
+                            id={item.dishID}
+                            price={item.price}
+                            isNonVeg={item.nonveg}
+                            getQuantity={getQuantity(item.dishID)}
+                            removeFromCart={() => removeFromCart(item.dishID)}
+                            addToCart={() => addToCart(item.dishID)}
+                        />
+                    )}
+                />
+                <Text>{cartPrice}</Text>
+            </View>
+        }
+    </>
     )
 }
 
