@@ -25,6 +25,13 @@ const Cart = ({ route, navigation }) => {
         fetchCartInfo()
     }, [isFocused == true])
 
+    // sets the tab bar badge to the amount of items in the cart
+    useEffect(() => {
+        navigation.setOptions({
+            tabBarBadge: cartDishIDs.length
+        })
+    }, [cartDishIDs])
+
     // fetches the IDs of dishes in the cart and stores in a state variable
     const fetchCartInfo = async () => {
         firestore.collection('users').doc(UID).get().then((doc) => {
@@ -41,11 +48,6 @@ const Cart = ({ route, navigation }) => {
             // restaurant ID of the restaurant whose dishes are in cart
             setRestaurantID(data.cart.restaurantID)
             let restoID = data.cart.restaurantID
-
-            // sets the tab bar badge to the amount of items in the cart
-            navigation.setOptions({
-                tabBarBadge: cartDishIDsArr.length
-            })
 
             // accessing the data from the restaurant with restaurant ID => restoID
             firestore.collection('restaurants').doc(restoID).get().then((snap) => {
