@@ -3,6 +3,8 @@ import { FlatList, Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, T
 import colors from "../constants/colors";
 import { auth, firestore } from "../firebase";
 import DishItem from "../components/DishItem";
+import { useIsFocused } from "@react-navigation/core";
+
 
 const RestaurantScreen = ({ route, navigation }) => {
     const { restaurantID, restaurantName } = route.params;
@@ -10,9 +12,7 @@ const RestaurantScreen = ({ route, navigation }) => {
         headerTitle: restaurantName,
     });
 
-
-
-    // cartPriceHandler()
+    const isFocused = useIsFocused()
     // Build a logic to fetch cart items from the database at initial render
     const UID = auth.currentUser.uid
 
@@ -27,8 +27,7 @@ const RestaurantScreen = ({ route, navigation }) => {
     useEffect(() => {
         getDishes()
         getCart()
-        return
-    }, [])
+    }, [isFocused==true])
 
     // Gets the array of dishIDs and cart total present in the cart
     const getCart = () => {
