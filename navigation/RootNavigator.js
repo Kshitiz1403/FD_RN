@@ -14,6 +14,7 @@ import { auth, firestore } from '../firebase'
 import EditAccount from '../screens/EditAccount'
 import RestaurantScreen from '../screens/RestaurantScreen'
 import { useIsFocused, useNavigation } from '@react-navigation/core';
+import LottieView from 'lottie-react-native';
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator();
@@ -77,6 +78,7 @@ const MyTheme = {
 const RootNavigator = () => {
 
     const [isUserSignedIn, setIsUserSignedIn] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             if (user) {
@@ -85,6 +87,10 @@ const RootNavigator = () => {
             else {
                 setIsUserSignedIn(false)
             }
+            // setIsLoading(false)
+            setTimeout(() => {
+                setIsLoading(false)
+            }, 1100);
         })
         return unsubscribe
     }, [])
@@ -110,7 +116,11 @@ const RootNavigator = () => {
 
     return (
         <NavigationContainer theme={MyTheme}>
-            {isUserSignedIn ? <AppStackScreen /> : <AuthStackScreen />}
+            <View style={{backgroundColor:colors.background, flex:1}}>
+                {isLoading ? <LottieView source={require('../assets/animations/logo.json')} autoPlay/> :
+                    isUserSignedIn ? <AppStackScreen /> : <AuthStackScreen />
+                }
+            </View>
         </NavigationContainer>
     )
 }
