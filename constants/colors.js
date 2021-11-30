@@ -1,16 +1,17 @@
 export default {
-    primary: '#F56694',
+    primary: '#ffff',
     // #F56694
     // #EA7C69
     // #fb8500
     secondary: '#9288E0',
-    background: '#252836',
-    dark: '#1F1D2B',
+    background: '#111111',
+    // #100F0F
+    dark: '#111111',
     light: '#ABBBC2',
     lighter: '#E0E6E9',
     text: {
         default:'#ffff',
         light: '#ABBBC2',
-        dark: '#3B5162',
+        dark: '#111111',
     }
 }

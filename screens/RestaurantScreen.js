@@ -139,7 +139,7 @@ const RestaurantScreen = ({ route, navigation }) => {
             ?
             <Pressable onPress={() => {
                 navigation.navigate('Cart')
-            }} android_ripple={{ color: colors.text.default, }} style={cartStyles.subContainer}>
+            }} android_ripple={{ color: colors.light, }} style={cartStyles.subContainer}>
                 <View>
                     <Text style={cartStyles.detailsText}>{cartDishes.length} Item{cartDishes.length == 1 ? '' : 's'} {/*'s' only when more than one items*/} |  ₹{cartPrice}</Text>
                 </View>
@@ -217,11 +217,11 @@ const cartStyles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     detailsText: {
-        color: colors.text.default,
+        color: colors.text.dark,
         fontWeight: '700',
     },
     text: {
-        color: colors.text.default,
+        color: colors.text.dark,
         textTransform: 'uppercase',
         fontWeight: '700',
     }

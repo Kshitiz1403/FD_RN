@@ -25,7 +25,7 @@ const DishItem = (props) => (
             <View style={dishStyles.button}>
                 {!(props.cartDishes).includes(props.id) ?
                     Platform.OS == "android" ?
-                        <Pressable style={dishStyles.addButton} android_ripple={{ color: colors.primary }} onPress={props.addToCart}>
+                        <Pressable style={dishStyles.addButton} android_ripple={{ color: colors.light }} onPress={props.addToCart}>
                             <Text style={dishStyles.addText}>Add</Text>
                         </Pressable>
                         :
@@ -102,8 +102,6 @@ const dishStyles = StyleSheet.create({
         height: 30,
         alignItems: 'center',
         justifyContent: 'center',
-        borderColor: colors.primary,
-        borderWidth: 1.5,
     },
     addButton: {
         width: '100%',
@@ -129,7 +127,7 @@ const dishStyles = StyleSheet.create({
         color: colors.text.dark,
     },
     addText: {
-        color: colors.primary,
+        color: colors.text.dark,
         fontWeight: '700',
         textTransform: 'uppercase'
     }
