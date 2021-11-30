@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/core'
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions, TextInput, Image, FlatList } from 'react-native'
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions, TextInput, Image, FlatList, Platform } from 'react-native'
 import TextCustom from '../constants/TextCustom'
 import { auth, firestore } from '../firebase'
 import { SimpleLineIcons } from '@expo/vector-icons';
@@ -70,7 +70,7 @@ const Explore = () => {
     const DeliverTo = () => {
         return (
             <View>
-                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'flex-end' }} onPress={toggleAddressModal}>
+                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent:Platform.OS=="ios"?"center":null }} onPress={toggleAddressModal}>
                     <TextCustom>Deliver to  </TextCustom>
                     <SimpleLineIcons name="arrow-down" size={14} color="white" />
                 </TouchableOpacity>
