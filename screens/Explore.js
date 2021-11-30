@@ -22,8 +22,9 @@ const Explore = () => {
 
     useEffect(() => {
         firestore.collection('users').doc(UID).get().then((doc => {
-            if (doc.data().address) {
-                setAddress({ roomNo: doc.data().address.roomNumber, hostel: doc.data().address.hostel })
+            let data = doc.data()
+            if (data.address) {
+                setAddress({ roomNo: data.address.roomNumber, hostel: data.address.hostel })
             }
         })).catch((err) => console.log(err))
         return
