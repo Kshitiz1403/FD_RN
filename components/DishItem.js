@@ -16,11 +16,11 @@ const DishItem = (props) => (
             <View style={dishStyles.detailsText}>
                 <Text style={dishStyles.dishText}>{props.dishName}</Text>
                 <Text style={dishStyles.dishPrice}>₹{props.price}</Text>
-                <Text style={dishStyles.description} numberOfLines={2} >{props.description}</Text>
+                {props.description ? <Text style={dishStyles.description} numberOfLines={2} >{props.description}</Text> : null}
             </View>
         </View>
         <View style={[dishStyles.imageContainer, { justifyContent: props.image ? 'flex-end' : 'center' }]}>
-            <Image source={{ uri: props.image }} style={dishStyles.image} />
+            <Image source={{ uri: props.image?props.image:null }} style={dishStyles.image} />
 
             <View style={dishStyles.button}>
                 {!(props.cartDishes).includes(props.id) ?
