@@ -21,16 +21,17 @@ const Account = () => {
 
     useEffect(() => {
         userRef.get().then((doc => {
-            if (doc.data()) {
-                setPhone(auth.currentUser.phoneNumber)
-                if(doc.data().Name){
-                    setNameOfUser(doc.data().Name)
+            let data = doc.data()
+            setPhone(auth.currentUser.phoneNumber)
+            if (data) {
+                if(data.Name){
+                    setNameOfUser(data.Name)
                 }
-                if (doc.data().Email) {
-                    setEmail(doc.data().Email)
+                if (data.Email) {
+                    setEmail(data.Email)
                 }
-                if (doc.data().graduationYear) {
-                    setGraduation(doc.data().graduationYear)
+                if (data.graduationYear) {
+                    setGraduation(data.graduationYear)
                 }
                 // console.log(doc.data())
                 setUpdate(false)
