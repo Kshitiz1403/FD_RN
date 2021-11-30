@@ -1,5 +1,8 @@
 export default {
-    primary: '#EA7C69',
+    primary: '#F56694',
+    // #F56694
+    // #EA7C69
+    // #fb8500
     secondary: '#9288E0',
     background: '#252836',
     dark: '#1F1D2B',
