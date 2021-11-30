@@ -90,7 +90,7 @@ const RootNavigator = () => {
             // setIsLoading(false)
             setTimeout(() => {
                 setIsLoading(false)
-            }, 1100);
+            }, 1200);
         })
         return unsubscribe
     }, [])
