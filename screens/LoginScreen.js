@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/core'
 import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
 import React, { useRef, useState, useEffect } from 'react'
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
 import { auth } from '../firebase'
 import { firebaseConfig } from '../firebaseConfig'
 import * as firebase from 'firebase'
@@ -47,6 +47,7 @@ const LoginScreen = () => {
 
 
     return (
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View
             style={styles.container}
         >
@@ -86,6 +87,7 @@ const LoginScreen = () => {
                 <SecondaryButton text="Verify" onPress={handleVerifyOTP} />
             </View>
         </View>
+        </TouchableWithoutFeedback>
     )
 }
 
