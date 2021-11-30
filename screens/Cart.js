@@ -214,7 +214,6 @@ const Cart = ({ route, navigation }) => {
                         />
                     )}
                 />
-                <Text>{cartPrice}</Text>
             </View>
         }
     </>
@@ -282,16 +281,16 @@ const restaurantStyles = StyleSheet.create({
 })
 
 const emptyCartStyles = StyleSheet.create({
-    container:{
+    container: {
         justifyContent: 'center', alignItems: 'center', flex: 1
     },
-    animation:{
+    animation: {
         width: '90%'
     },
-    textContainer:{
-        alignItems:'center'
+    textContainer: {
+        alignItems: 'center'
     },
-    text:{
+    text: {
         color: colors.text.light, fontSize: 18, fontWeight: '700', width: '70%'
     }
 })
