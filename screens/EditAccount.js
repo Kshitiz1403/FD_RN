@@ -23,15 +23,16 @@ const EditAccount = ({route, navigation}) => {
 
     useEffect(() => {
         userRef.get().then((doc => {
-            if (doc.data()) {
-                if (doc.data().Name){
-                    setNameOfUser(doc.data().Name)
+            let data = doc.data()
+            if (data) {
+                if (data.Name){
+                    setNameOfUser(data.Name)
                 }
-                if (doc.data().Email){
-                    setEmail(doc.data().Email)
+                if (data.Email){
+                    setEmail(data.Email)
                 }
-                if (doc.data().graduationYear){
-                    setGraduation(doc.data().graduationYear)
+                if (data.graduationYear){
+                    setGraduation(data.graduationYear)
                 }
 
                 // get initial input state from firestore
@@ -44,9 +45,10 @@ const EditAccount = ({route, navigation}) => {
 
     const getName = () =>{
         userRef.get().then((doc=>{
-            if (doc.data()){
-                if (doc.data().Name){
-                    setNameOfUser(doc.data().Name)
+            let data = doc.data()
+            if (data){
+                if (data.Name){
+                    setNameOfUser(data.Name)
                 }
             }
         }))
@@ -54,9 +56,10 @@ const EditAccount = ({route, navigation}) => {
 
     const getEmail = () =>{
         userRef.get().then((doc=>{
-            if (doc.data()){
-                if (doc.data().Email){
-                    setEmail(doc.data().Email)
+            let data = doc.data()
+            if (data){
+                if (data.Email){
+                    setEmail(data.Email)
                 }
             }
         }))
@@ -64,9 +67,10 @@ const EditAccount = ({route, navigation}) => {
 
     const getGraduation = () =>{
         userRef.get().then((doc=>{
-            if (doc.data()){
-                if (doc.data().graduationYear){
-                    setGraduation(doc.data().graduationYear)
+            let data = doc.data()
+            if (data){
+                if (data.graduationYear){
+                    setGraduation(data.graduationYear)
                 }
             }
         }))
@@ -92,7 +96,7 @@ const EditAccount = ({route, navigation}) => {
 
     const NameButtons = () => {
         return (
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, marginBottom: 10 }}>
+            <View style={styles.updateAndCancel}>
                 <PrimaryButton text="Update" onPress={() => handleNameUpdate()} />
                 <SecondaryButton text="Cancel" onPress={() => {
                     setEditName(false)
@@ -104,7 +108,7 @@ const EditAccount = ({route, navigation}) => {
 
     const MailButtons = () => {
         return (
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, marginBottom: 10 }}>
+            <View style={styles.updateAndCancel}>
                 <PrimaryButton text="Update" onPress={() => handleMailUpdate()} />
                 <SecondaryButton text="Cancel" onPress={() => {
                     setEditMail(false)
@@ -116,7 +120,7 @@ const EditAccount = ({route, navigation}) => {
 
     const GraduationButtons = () => {
         return (
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, marginBottom: 10 }}>
+            <View style={styles.updateAndCancel}>
                 <PrimaryButton text="Update" onPress={() => handleGraduationUpdate()} />
                 <SecondaryButton text="Cancel" onPress={() => {
                     setEditGraduation(false)
@@ -206,7 +210,12 @@ const EditAccount = ({route, navigation}) => {
 export default EditAccount
 
 const styles = StyleSheet.create({
-
+    updateAndCancel:{
+        flexDirection: 'row', 
+        justifyContent: 'space-between', 
+        marginHorizontal: 25, 
+        marginBottom: 10
+    }
 })
 
 const itemStyles = StyleSheet.create({
