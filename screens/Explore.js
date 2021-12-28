@@ -34,6 +34,11 @@ const Explore = () => {
         return
     }, [])
 
+    useEffect(() => {
+        navigation.setOptions({
+            headerTitle: () => <DeliverTo />
+        })
+    }, [address])
 
     const navigation = useNavigation()
 
@@ -88,9 +93,6 @@ const Explore = () => {
             <TextInput placeholder="Search for food, restaurant, etc." placeholderTextColor={colors.text.light} style={styles.searchInput} numberOfLines={1} />
         </View>
     }
-    navigation.setOptions({
-        headerTitle: () => <DeliverTo />
-    })
 
     const handleSaveAddress = async () => {
         setAddress({ roomNo: roomNumber, hostel: selectedHostel })
