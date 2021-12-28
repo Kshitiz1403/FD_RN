@@ -8,9 +8,11 @@ import { useIsFocused } from "@react-navigation/core";
 
 const RestaurantScreen = ({ route, navigation }) => {
     const { restaurantID, restaurantName } = route.params;
-    navigation.setOptions({
-        headerTitle: restaurantName,
-    });
+    useEffect(() => {
+        navigation.setOptions({
+            headerTitle: restaurantName,
+        });
+    }, [])
 
     const isFocused = useIsFocused()
     // Build a logic to fetch cart items from the database at initial render
