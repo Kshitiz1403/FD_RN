@@ -10,6 +10,7 @@ import { Feather } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 import { Picker } from '@react-native-picker/picker'
 import PrimaryButton from '../components/PrimaryButton'
+import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore"; 
 
 const Explore = () => {
 
@@ -20,13 +21,25 @@ const Explore = () => {
     const [isAddressModalVisible, setIsAddressModalVisible] = useState(false)
     const [count, setCount] = useState(0)
 
+    const user = auth.currentUser
+    const UID = user.uid
+    const userRef = doc(firestore, 'users', UID)
+
     useEffect(() => {
-        firestore.collection('users').doc(UID).get().then((doc => {
-            let data = doc.data()
+        const getAddress = async() =>{
+            const querySnapshot = await getDoc(userRef)
+            let data = querySnapshot.data()
             if (data.address) {
                 setAddress({ roomNo: data.address.roomNumber, hostel: data.address.hostel })
             }
-        })).catch((err) => console.log(err))
+        }
+        getAddress()
+        // firestore.collection('users').doc(UID).get().then((doc => {
+        //     let data = doc.data()
+        //     if (data.address) {
+        //         setAddress({ roomNo: data.address.roomNumber, hostel: data.address.hostel })
+        //     }
+        // })).catch((err) => console.log(err))
         return
     }, [])
     useEffect(() => {
@@ -42,8 +55,7 @@ const Explore = () => {
 
     const navigation = useNavigation()
 
-    const user = auth.currentUser
-    const UID = user.uid
+
 
     let handleHostelIdentifier
     if (address.hostel == 'girls') {
@@ -61,16 +73,21 @@ const Explore = () => {
 
 
     let restaurantArray = []
-    const getRestaurants = () => {
-        firestore.collection('restaurants').get()
-            .then((querySnapshot) => {
-                querySnapshot.forEach(documentSnapshot => {
-                    restaurantArray.push({ ...documentSnapshot.data(), id: documentSnapshot.id })
-                    setCount(count + 1)
-                    // Removing the setCount somehow disarms the function and hence is necessary for it work
-                })
-            })
-            .then(setRestaurants(restaurantArray))
+    const getRestaurants = async () => {
+        const querySnapshot = await getDocs(collection(firestore,'restaurants'))
+        querySnapshot.forEach((doc)=>{
+            restaurantArray.push({...doc.data(), id:doc.id})
+        })
+        setRestaurants(restaurantArray)
+        // firestore.collection('restaurants').get()
+        //     .then((querySnapshot) => {
+        //         querySnapshot.forEach(documentSnapshot => {
+        //             restaurantArray.push({ ...documentSnapshot.data(), id: documentSnapshot.id })
+        //             setCount(count + 1)
+        //             // Removing the setCount somehow disarms the function and hence is necessary for it work
+        //         })
+        //     })
+        //     .then(setRestaurants(restaurantArray))
     }
     const DeliverTo = () => {
         return (
@@ -98,12 +115,17 @@ const Explore = () => {
         setAddress({ roomNo: roomNumber, hostel: selectedHostel })
         toggleAddressModal()
 
-        await (firestore.collection('users').doc(UID).set({
-            address: {
-                roomNumber: parseInt(roomNumber),
-                hostel: selectedHostel
-            }
-        }, { merge: true }))
+        setDoc(userRef, {address: {
+            roomNumber: parseInt(roomNumber),
+            hostel: selectedHostel
+        }}, {merge:true})
+       
+        // await (firestore.collection('users').doc(UID).set({
+        //     address: {
+        //         roomNumber: parseInt(roomNumber),
+        //         hostel: selectedHostel
+        //     }
+        // }, { merge: true }))
     }
 
     const RestaurantItem = (props) => {

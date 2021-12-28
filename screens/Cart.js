@@ -6,9 +6,13 @@ import { useIsFocused, useNavigation } from '@react-navigation/core';
 import DishItem from '../components/DishItem';
 import { Entypo } from '@expo/vector-icons';
 import LottieView from 'lottie-react-native';
+import { getAuth } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 const Cart = ({ route, navigation }) => {
+    const auth = getAuth()
     const UID = auth.currentUser.uid
+    const userRef = doc(firestore, 'users', UID)
 
     let isFocused = useIsFocused()
 
@@ -42,12 +46,12 @@ const Cart = ({ route, navigation }) => {
 
     // fetches the IDs of dishes in the cart and stores in a state variable
     const fetchCartInfo = async () => {
-        firestore.collection('users').doc(UID).get().then((doc) => {
-            // data from the logged in user stored in "data"
-            let data = doc.data()
-            let cartDishIDsArr = []
-            let allDishesArr = []
-
+        const userSnapshot = await getDoc(userRef)
+        // data from the logged in user stored in "data"
+        let data = userSnapshot.data()
+        let cartDishIDsArr = []
+        let allDishesArr = []
+        if (data.cart) {
             // array of all the IDs of dishes added in the cart of the user
             cartDishIDsArr = data.cart.dishes
             setCartDishIDs(data.cart.dishes)
@@ -57,39 +61,91 @@ const Cart = ({ route, navigation }) => {
             setRestaurantID(data.cart.restaurantID)
             let restoID = data.cart.restaurantID
 
-            // accessing the data from the restaurant with restaurant ID => restoID
-            firestore.collection('restaurants').doc(restoID).get().then((snap) => {
+            const restaurantRef = doc(firestore, 'restaurants', restoID)
+            const restaurantSnapshot = await getDoc(restaurantRef)
 
-                // restaurant data stored in restoData
-                let restoData = snap.data()
-                setRestaurantData(restoData)
+            // restaurant data stored in restoData
+            let restoData = restaurantSnapshot.data()
+            setRestaurantData(restoData)
 
-                // list of all dishes from that restaurant
-                allDishesArr = restoData.dishes
-                setAllDishesData(restoData.dishes)
+            // list of all dishes from that restaurant
+            allDishesArr = restoData.dishes
+            setAllDishesData(restoData.dishes)
 
-                // array of data of dishes in cart with information like price, non veg, name, dishID, etc. 
-                let cartDishesDataArr = []
-                for (var i of allDishesArr) {
-                    for (var j of cartDishIDsArr) {
-                        if (i.dishID == j) {
-                            cartDishesDataArr.push(i)
-                        }
+            // array of data of dishes in cart with information like price, non veg, name, dishID, etc. 
+            let cartDishesDataArr = []
+            for (var i of allDishesArr) {
+                for (var j of cartDishIDsArr) {
+                    if (i.dishID == j) {
+                        cartDishesDataArr.push(i)
                     }
                 }
-                setAllCartDishesData(cartDishesDataArr)
+            }
+            setAllCartDishesData(cartDishesDataArr)
 
-                let arr = cartDishesDataArr
-                let unique = []
-                for (let el of arr) {
-                    if (!unique.includes(el)) {
-                        unique.push(el)
-                    }
+            let arr = cartDishesDataArr
+            let unique = []
+            for (let el of arr) {
+                if (!unique.includes(el)) {
+                    unique.push(el)
                 }
-                // setting only the unique cart dishes which is later used to render Flatlist. Used for rendering only the unique dishes in the flatlist and later increasing the quantity only without adding more items to Flatlist 
-                setUniqueAllCartDishesData(unique)
-            })
-        })
+            }
+            // setting only the unique cart dishes which is later used to render Flatlist. Used for rendering only the unique dishes in the flatlist and later increasing the quantity only without adding more items to Flatlist 
+            setUniqueAllCartDishesData(unique)
+        }
+
+
+
+        // -----------------------------
+
+        // firestore.collection('users').doc(UID).get().then((doc) => {
+        //     // data from the logged in user stored in "data"
+        //     let data = doc.data()
+        //     let cartDishIDsArr = []
+        //     let allDishesArr = []
+
+        //     // array of all the IDs of dishes added in the cart of the user
+        //     cartDishIDsArr = data.cart.dishes
+        //     setCartDishIDs(data.cart.dishes)
+        //     setCartPrice(data.cart.cartTotal)
+
+        //     // restaurant ID of the restaurant whose dishes are in cart
+        //     setRestaurantID(data.cart.restaurantID)
+        //     let restoID = data.cart.restaurantID
+
+        //     // accessing the data from the restaurant with restaurant ID => restoID
+        //     firestore.collection('restaurants').doc(restoID).get().then((snap) => {
+
+        //         // restaurant data stored in restoData
+        //         let restoData = snap.data()
+        //         setRestaurantData(restoData)
+
+        //         // list of all dishes from that restaurant
+        //         allDishesArr = restoData.dishes
+        //         setAllDishesData(restoData.dishes)
+
+        //         // array of data of dishes in cart with information like price, non veg, name, dishID, etc. 
+        //         let cartDishesDataArr = []
+        //         for (var i of allDishesArr) {
+        //             for (var j of cartDishIDsArr) {
+        //                 if (i.dishID == j) {
+        //                     cartDishesDataArr.push(i)
+        //                 }
+        //             }
+        //         }
+        //         setAllCartDishesData(cartDishesDataArr)
+
+        //         let arr = cartDishesDataArr
+        //         let unique = []
+        //         for (let el of arr) {
+        //             if (!unique.includes(el)) {
+        //                 unique.push(el)
+        //             }
+        //         }
+        //         // setting only the unique cart dishes which is later used to render Flatlist. Used for rendering only the unique dishes in the flatlist and later increasing the quantity only without adding more items to Flatlist 
+        //         setUniqueAllCartDishesData(unique)
+        //     })
+        // })
     }
 
     // Responsible for handling the total cart value => returns total cart value (number) 
@@ -131,13 +187,20 @@ const Cart = ({ route, navigation }) => {
 
     // Responsible for updating changes to the firestore database. Changes => array of dishIDs, restaurantID (whose dishes are in the cart), cartTotal
     const updateCart = async (arr, price) => {
-        firestore.collection('users').doc(UID).set({
+        setDoc(userRef, {
             cart: {
                 dishes: arr,
                 restaurantID: restaurantID,
                 cartTotal: price
             }
         }, { merge: true })
+        // firestore.collection('users').doc(UID).set({
+        //     cart: {
+        //         dishes: arr,
+        //         restaurantID: restaurantID,
+        //         cartTotal: price
+        //     }
+        // }, { merge: true })
     }
 
     // Responsible for reducing item quantity by 1 and later updating that value to the database

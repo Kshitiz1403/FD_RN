@@ -4,10 +4,11 @@ import React, { useRef, useState, useEffect } from 'react'
 import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
 import { auth } from '../firebase'
 import { firebaseConfig } from '../firebaseConfig'
-import * as firebase from 'firebase'
+// import * as firebase from 'firebase'
 import colors from '../constants/colors';
 import PrimaryButton from '../components/PrimaryButton'
 import SecondaryButton from '../components/SecondaryButton';
+import { PhoneAuthProvider, signInWithCredential, signInWithPhoneNumber } from "firebase/auth";
 
 const LoginScreen = () => {
 
@@ -17,7 +18,8 @@ const LoginScreen = () => {
 
     const handleSendOTP = async () => {
         try {
-            const verificationId = await firebase.auth().signInWithPhoneNumber(
+            const verificationId = await signInWithPhoneNumber(
+                auth,
                 `+91${phone}`,
                 recaptchaVerifier.current
             );
@@ -31,11 +33,11 @@ const LoginScreen = () => {
 
     const handleVerifyOTP = async () => {
         try {
-            const credential = firebase.auth.PhoneAuthProvider.credential(
+            const credential = PhoneAuthProvider.credential(
                 verificationId.verificationId,
                 otp
             );
-            await firebase.auth().signInWithCredential(credential);
+            await signInWithCredential(auth,credential);
             alert("Phone verification successful")
         } catch (err) {
             alert(err)

@@ -4,6 +4,7 @@ import colors from "../constants/colors";
 import { auth, firestore } from "../firebase";
 import DishItem from "../components/DishItem";
 import { useIsFocused } from "@react-navigation/core";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 
 const RestaurantScreen = ({ route, navigation }) => {
@@ -17,6 +18,8 @@ const RestaurantScreen = ({ route, navigation }) => {
     const isFocused = useIsFocused()
     // Build a logic to fetch cart items from the database at initial render
     const UID = auth.currentUser.uid
+    const userRef = doc(firestore, 'users', UID)
+    const restaurantRef = doc(firestore, 'restaurants', restaurantID)
 
     const [dishes, setDishes] = useState([])
 
@@ -29,31 +32,51 @@ const RestaurantScreen = ({ route, navigation }) => {
     useEffect(() => {
         getDishes()
         getCart()
-    }, [isFocused==true])
+    }, [isFocused == true])
 
     // Gets the array of dishIDs and cart total present in the cart
-    const getCart = () => {
-        firestore.collection('users').doc(UID).get()
-            .then((doc) => {
-                if (doc.data().cart.restaurantID == restaurantID) {
-                    setCartDishes(doc.data().cart.dishes)
-                    setCartPrice(doc.data().cart.cartTotal)
-                }
-            })
+    const getCart = async () => {
+        const querySnapshot = await getDoc(userRef)
+        let data = querySnapshot.data()
+        if (data.cart){
+            if (data.cart.restaurantID == restaurantID) {
+                setCartDishes(data.cart.dishes)
+                setCartPrice(data.cart.cartTotal)
+            }
+        }
     }
 
+    // const getCart = () => {
+    //     firestore.collection('users').doc(UID).get()
+    //         .then((doc) => {
+    //             if (doc.data().cart.restaurantID == restaurantID) {
+    //                 setCartDishes(doc.data().cart.dishes)
+    //                 setCartPrice(doc.data().cart.cartTotal)
+    //             }
+    //         })
+    // }
+
     // Updates the cart details like dishes array, cart total, restaurantID in the database 
-    const updateCart = async () => {
-        firestore.collection('users').doc(UID).set({
+
+    const updateCart = () => {
+        setDoc(userRef, {
             cart: {
                 dishes: cartDishes,
                 restaurantID: restaurantID,
                 cartTotal: cartPrice
             }
         }, { merge: true })
-
-        // add a logic to change a state to update cart screen every time that state changes i.e. every time we update Cart
     }
+
+    // const updateCart = async () => {
+    //     firestore.collection('users').doc(UID).set({
+    //         cart: {
+    //             dishes: cartDishes,
+    //             restaurantID: restaurantID,
+    //             cartTotal: cartPrice
+    //         }
+    //     }, { merge: true })
+    // }
 
     // triggers every time we add an item to the cart
     const addToCart = (id, price) => {
@@ -90,13 +113,21 @@ const RestaurantScreen = ({ route, navigation }) => {
         setCartPrice(price)
 
         // Seems similar to updateCart but is not. It uses a local variable instead of a state variable to update cart total to the database 
-        firestore.collection('users').doc(UID).set({
+        setDoc(userRef, {
             cart: {
                 dishes: cartDishes,
                 restaurantID: restaurantID,
                 cartTotal: price
             }
         }, { merge: true })
+
+        // firestore.collection('users').doc(UID).set({
+        //     cart: {
+        //         dishes: cartDishes,
+        //         restaurantID: restaurantID,
+        //         cartTotal: price
+        //     }
+        // }, { merge: true })
     }
 
     // triggers every time we remove an item to the cart
@@ -127,12 +158,18 @@ const RestaurantScreen = ({ route, navigation }) => {
     }
 
     // gets all the dishes from the restaurant and updates the state to an array of dishIDs
-    const getDishes = () => {
-        firestore.collection('restaurants').doc(restaurantID).get().then((querySnapshot) => {
-            let dishesArr = (querySnapshot.data().dishes)
-            setDishes(dishesArr)
-        })
+    const getDishes = async() => {
+        const querySnapshot = await getDoc(restaurantRef)
+        let data = querySnapshot.data()
+        let dishesArr = data.dishes
+        setDishes(dishesArr)
     }
+    // const getDishes = () => {
+    //     firestore.collection('restaurants').doc(restaurantID).get().then((querySnapshot) => {
+    //         let dishesArr = (querySnapshot.data().dishes)
+    //         setDishes(dishesArr)
+    //     })
+    // }
 
     const Cart = () => <View style={[cartStyles.container,
     { display: cartDishes.length == 0 ? "none" : "flex" }

@@ -1,3 +1,5 @@
+import { getAuth } from 'firebase/auth'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, TextInput, View } from 'react-native'
 import EditButton from '../components/EditButton'
@@ -7,7 +9,7 @@ import colors from '../constants/colors'
 import { auth, firestore } from '../firebase'
 
 const EditAccount = ({route, navigation}) => {
-
+    const auth = getAuth()
     const {toUpdate} = route.params
 
     const [nameOfUser, setNameOfUser] = useState('')
@@ -19,11 +21,13 @@ const EditAccount = ({route, navigation}) => {
     const [editGraduation, setEditGraduation] = useState(false)
 
     const UID = auth.currentUser.uid
-    const userRef = firestore.collection('users').doc(UID)
+    // const userRef = firestore.collection('users').doc(UID)
+    const userRef = doc(firestore, 'users',UID)
 
     useEffect(() => {
-        userRef.get().then((doc => {
-            let data = doc.data()
+        const getDetails = async() =>{
+            const querySnapshot = await getDoc(userRef)
+            let data = querySnapshot.data()
             if (data) {
                 if (data.Name){
                     setNameOfUser(data.Name)
@@ -39,60 +43,120 @@ const EditAccount = ({route, navigation}) => {
 
                 // when the user presses cancel on any form, the state should be set to the values from the firestore
             }
-        })).catch((err) => console.log(err))
+        }
+        getDetails()
+
+        // userRef.get().then((doc => {
+        //     let data = doc.data()
+        //     if (data) {
+        //         if (data.Name){
+        //             setNameOfUser(data.Name)
+        //         }
+        //         if (data.Email){
+        //             setEmail(data.Email)
+        //         }
+        //         if (data.graduationYear){
+        //             setGraduation(data.graduationYear)
+        //         }
+
+        //         // get initial input state from firestore
+
+        //         // when the user presses cancel on any form, the state should be set to the values from the firestore
+        //     }
+        // })).catch((err) => console.log(err))
         return
     }, [])
 
-    const getName = () =>{
-        userRef.get().then((doc=>{
-            let data = doc.data()
-            if (data){
-                if (data.Name){
-                    setNameOfUser(data.Name)
-                }
+    const getName = async() =>{
+        const querySnapshot = await getDoc(userRef)
+        let data = querySnapshot.data()
+        if (data){
+            if (data.Name){
+                setNameOfUser(data.Name)
             }
-        }))
+        }
+        // userRef.get().then((doc=>{
+        //     let data = doc.data()
+        //     if (data){
+        //         if (data.Name){
+        //             setNameOfUser(data.Name)
+        //         }
+        //     }
+        // }))
     }
 
-    const getEmail = () =>{
-        userRef.get().then((doc=>{
-            let data = doc.data()
-            if (data){
-                if (data.Email){
-                    setEmail(data.Email)
-                }
+    const getEmail = async() =>{
+
+        const querySnapshot = await getDoc(userRef)
+        let data = querySnapshot.data()
+        if (data){
+            if (data.Email){
+                setEmail(data.Email)
             }
-        }))
+        }
+        // userRef.get().then((doc=>{
+        //     let data = doc.data()
+        //     if (data){
+        //         if (data.Email){
+        //             setEmail(data.Email)
+        //         }
+        //     }
+        // }))
     }
 
-    const getGraduation = () =>{
-        userRef.get().then((doc=>{
-            let data = doc.data()
-            if (data){
-                if (data.graduationYear){
-                    setGraduation(data.graduationYear)
-                }
+    const getGraduation = async() =>{
+        const querySnapshot = await getDoc(userRef)
+        let data = querySnapshot.data()
+        if (data){
+            if (data.graduationYear){
+                setGraduation(data.graduationYear)
             }
-        }))
+        }
+        // userRef.get().then((doc=>{
+        //     let data = doc.data()
+        //     if (data){
+        //         if (data.graduationYear){
+        //             setGraduation(data.graduationYear)
+        //         }
+        //     }
+        // }))
     }
 
-    const handleNameUpdate = async () => {
-        userRef.set({ Name: nameOfUser }, { merge: true })
-        .then(()=>{setEditName(false); toUpdate(true)})
-        .catch((err)=>console.log("Error on updating name- ", err))
+    const handleNameUpdate =  () => {
+        setDoc(userRef, { Name: nameOfUser }, { merge: true })
+        setEditName(false)
+        toUpdate(true)
     }
+
+    // const handleNameUpdate = async () => {
+    //     userRef.set({ Name: nameOfUser }, { merge: true })
+    //     .then(()=>{setEditName(false); toUpdate(true)})
+    //     .catch((err)=>console.log("Error on updating name- ", err))
+    // }
 
     const handleMailUpdate = () => {
-        userRef.set({ Email: email }, { merge: true })
-            .then(()=>{setEditMail(false); toUpdate(true)})
-            .catch((err) => console.log("Error on updating email- ", err))
+        setDoc(userRef, { Email: email }, { merge: true })
+        setEditMail(false)
+        toUpdate(true)
     }
 
+    // const handleMailUpdate = () => {
+    //     userRef.set({ Email: email }, { merge: true })
+    //         .then(()=>{setEditMail(false); toUpdate(true)})
+    //         .catch((err) => console.log("Error on updating email- ", err))
+    // }
+
     const handleGraduationUpdate = () => {
-        userRef.set({graduationYear: parseInt(graduation)},{merge:true})
-        .then(()=>{setEditGraduation(false); toUpdate(true)})
-        .catch((err) => console.log("Error on updating graduation- ", err))
+        setDoc(userRef, {graduationYear: parseInt(graduation)},{merge:true})
+        setEditGraduation(false)
+        toUpdate(true)
     }
+
+    // const handleGraduationUpdate = () => {
+    //     userRef.set({graduationYear: parseInt(graduation)},{merge:true})
+    //     .then(()=>{setEditGraduation(false); toUpdate(true)})
+    //     .catch((err) => console.log("Error on updating graduation- ", err))
+    // }
 
     const NameButtons = () => {
         return (

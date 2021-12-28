@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { Platform, StyleSheet, Text, View } from 'react-native'
 import Account from '../screens/Account'
 import Explore from '../screens/Explore'
 import LoginScreen from '../screens/LoginScreen'
@@ -15,6 +15,8 @@ import EditAccount from '../screens/EditAccount'
 import RestaurantScreen from '../screens/RestaurantScreen'
 import { useIsFocused, useNavigation } from '@react-navigation/core';
 import LottieView from 'lottie-react-native';
+import { doc, getDoc } from "firebase/firestore";
+import { onAuthStateChanged } from 'firebase/auth'
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator();
@@ -25,16 +27,24 @@ const Home = () => {
 
     const UID = auth.currentUser.uid
     const [badgeNumber, setBadgeNumber] = useState(0)
+    const userRef = doc(firestore, 'users', UID)
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             // The screen is focused
             // Call any action
-            firestore.collection('users').doc(UID).get().then((doc) => {
-                let data = doc.data()
-                // sets the tab bar badge to the amount of items in the cart 
+            const setCartQuantity = async () => {
+                const querySnapshot = await getDoc(userRef)
+                let data = querySnapshot.data()
                 setBadgeNumber(data.cart.dishes.length)
-            })
+            }
+            setCartQuantity()
+
+            // firestore.collection('users').doc(UID).get().then((doc) => {
+            //     let data = doc.data()
+            //     // sets the tab bar badge to the amount of items in the cart 
+            //     setBadgeNumber(data.cart.dishes.length)
+            // })
         });
 
         // Return the function to unsubscribe from the event so it gets removed on unmount
@@ -80,17 +90,20 @@ const RootNavigator = () => {
     const [isUserSignedIn, setIsUserSignedIn] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
+        const unsubscribe = onAuthStateChanged(auth, user => {
             if (user) {
                 setIsUserSignedIn(true)
             }
             else {
                 setIsUserSignedIn(false)
             }
-            // setIsLoading(false)
             setTimeout(() => {
                 setIsLoading(false)
-            }, 1200);
+            }, 1000)
+            // setIsLoading(false)
+            // setTimeout(() => {
+            //     setIsLoading(false)
+            // }, 1200);
         })
         return unsubscribe
     }, [])
@@ -116,10 +129,14 @@ const RootNavigator = () => {
 
     return (
         <NavigationContainer theme={MyTheme}>
-            <View style={{backgroundColor:colors.background, flex:1}}>
-                {isLoading ? <LottieView source={require('../assets/animations/logo.json')} autoPlay/> :
-                    isUserSignedIn ? <AppStackScreen /> : <AuthStackScreen />
+            <View style={{ backgroundColor: colors.background, flex: 1 }}>
+                {/* Doesnt show loading lottie on web as it is not supported */}
+                {Platform.OS != "web" ?
+                    isLoading ? <LottieView source={require('../assets/animations/logo.json')} autoPlay /> :
+                        isUserSignedIn ? <AppStackScreen /> : <AuthStackScreen />
+                    : isUserSignedIn ? <AppStackScreen /> : <AuthStackScreen />
                 }
+
             </View>
         </NavigationContainer>
     )

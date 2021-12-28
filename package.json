@@ -15,7 +15,7 @@
     "expo": "~43.0.2",
     "expo-firebase-recaptcha": "~2.0.2",
     "expo-status-bar": "~1.1.0",
-    "firebase": "8.2.3",
+    "firebase": "^9.6.1",
     "lottie-ios": "3.2.3",
     "lottie-react-native": "4.0.3",
     "react": "17.0.1",
