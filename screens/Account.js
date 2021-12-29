@@ -87,7 +87,7 @@ const Account = () => {
         return (
             <View style={[generalInfoStyles.container]}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 2, paddingVertical: 5 }}>
-                    <TextCustom style={{ textTransform: 'uppercase', fontSize: 18, fontWeight: '700' }}>{nameOfUser}</TextCustom>
+                    <Text style={{ textTransform: 'uppercase', fontSize: 18, fontWeight: '700', color:colors.text.default  }}>{nameOfUser}</Text>
                     <EditButton text="Edit" onPress={() => navigation.navigate('Edit_Account',{
                         toUpdate:setUpdate
                     })} />
