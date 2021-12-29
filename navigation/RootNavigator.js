@@ -113,7 +113,7 @@ const RootNavigator = () => {
     const AppStack = createNativeStackNavigator()
     const AppStackScreen = () => (
         <View style={{ backgroundColor: colors.background, flex: 1 }}>
-            <AppStack.Navigator >
+            <AppStack.Navigator screenOptions={{ animation: "slide_from_right" }}>
                 <AppStack.Screen name="Home" component={Home} options={{ headerShown: false }} />
                 <AppStack.Screen name="Edit_Account" component={EditAccount} options={{ title: "Edit Account" }} />
                 <AppStack.Screen name="Restaurant_Screen" component={RestaurantScreen} />
