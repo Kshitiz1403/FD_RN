@@ -7,7 +7,7 @@ const PrimaryButton = (props) => {
         <>
             {Platform.OS == "android" ?
                 <View style={[styles.androidContainer, { ...props.style, width: 0.4 * useWindowDimensions().width }]}>
-                    <Pressable android_ripple={{ color: colors.text.default }}
+                    <Pressable android_ripple={{ color: colors.light }}
                         style={styles.androidPressable}
                         onPress={props.onPress}>
                         <View style={styles.container}>
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     },
     text: {
         textTransform: 'uppercase',
-        color: colors.text.default,
+        color: colors.text.dark,
         fontWeight: '700',
         fontSize: 15
     }

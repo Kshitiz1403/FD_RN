@@ -1,3 +1,5 @@
+import { getAuth } from 'firebase/auth'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, TextInput, View } from 'react-native'
 import EditButton from '../components/EditButton'
@@ -7,7 +9,7 @@ import colors from '../constants/colors'
 import { auth, firestore } from '../firebase'
 
 const EditAccount = ({route, navigation}) => {
-
+    const auth = getAuth()
     const {toUpdate} = route.params
 
     const [nameOfUser, setNameOfUser] = useState('')
@@ -19,80 +21,85 @@ const EditAccount = ({route, navigation}) => {
     const [editGraduation, setEditGraduation] = useState(false)
 
     const UID = auth.currentUser.uid
-    const userRef = firestore.collection('users').doc(UID)
+    // const userRef = firestore.collection('users').doc(UID)
+    const userRef = doc(firestore, 'users',UID)
 
     useEffect(() => {
-        userRef.get().then((doc => {
-            if (doc.data()) {
-                if (doc.data().Name){
-                    setNameOfUser(doc.data().Name)
+        const getDetails = async() =>{
+            const querySnapshot = await getDoc(userRef)
+            let data = querySnapshot.data()
+            if (data) {
+                if (data.Name){
+                    setNameOfUser(data.Name)
                 }
-                if (doc.data().Email){
-                    setEmail(doc.data().Email)
+                if (data.Email){
+                    setEmail(data.Email)
                 }
-                if (doc.data().graduationYear){
-                    setGraduation(doc.data().graduationYear)
+                if (data.graduationYear){
+                    setGraduation(data.graduationYear)
                 }
 
                 // get initial input state from firestore
 
                 // when the user presses cancel on any form, the state should be set to the values from the firestore
             }
-        })).catch((err) => console.log(err))
+        }
+        getDetails()
         return
     }, [])
 
-    const getName = () =>{
-        userRef.get().then((doc=>{
-            if (doc.data()){
-                if (doc.data().Name){
-                    setNameOfUser(doc.data().Name)
-                }
+    const getName = async() =>{
+        const querySnapshot = await getDoc(userRef)
+        let data = querySnapshot.data()
+        if (data){
+            if (data.Name){
+                setNameOfUser(data.Name)
             }
-        }))
+        }
     }
 
-    const getEmail = () =>{
-        userRef.get().then((doc=>{
-            if (doc.data()){
-                if (doc.data().Email){
-                    setEmail(doc.data().Email)
-                }
+    const getEmail = async() =>{
+
+        const querySnapshot = await getDoc(userRef)
+        let data = querySnapshot.data()
+        if (data){
+            if (data.Email){
+                setEmail(data.Email)
             }
-        }))
+        }
     }
 
-    const getGraduation = () =>{
-        userRef.get().then((doc=>{
-            if (doc.data()){
-                if (doc.data().graduationYear){
-                    setGraduation(doc.data().graduationYear)
-                }
+    const getGraduation = async() =>{
+        const querySnapshot = await getDoc(userRef)
+        let data = querySnapshot.data()
+        if (data){
+            if (data.graduationYear){
+                setGraduation(data.graduationYear)
             }
-        }))
+        }
     }
 
-    const handleNameUpdate = async () => {
-        userRef.set({ Name: nameOfUser }, { merge: true })
-        .then(()=>{setEditName(false); toUpdate(true)})
-        .catch((err)=>console.log("Error on updating name- ", err))
+    const handleNameUpdate =  () => {
+        setDoc(userRef, { Name: nameOfUser }, { merge: true })
+        setEditName(false)
+        toUpdate(true)
     }
 
     const handleMailUpdate = () => {
-        userRef.set({ Email: email }, { merge: true })
-            .then(()=>{setEditMail(false); toUpdate(true)})
-            .catch((err) => console.log("Error on updating email- ", err))
+        setDoc(userRef, { Email: email }, { merge: true })
+        setEditMail(false)
+        toUpdate(true)
     }
 
     const handleGraduationUpdate = () => {
-        userRef.set({graduationYear: parseInt(graduation)},{merge:true})
-        .then(()=>{setEditGraduation(false); toUpdate(true)})
-        .catch((err) => console.log("Error on updating graduation- ", err))
+        setDoc(userRef, {graduationYear: parseInt(graduation)},{merge:true})
+        setEditGraduation(false)
+        toUpdate(true)
     }
 
     const NameButtons = () => {
         return (
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, marginBottom: 10 }}>
+            <View style={styles.updateAndCancel}>
                 <PrimaryButton text="Update" onPress={() => handleNameUpdate()} />
                 <SecondaryButton text="Cancel" onPress={() => {
                     setEditName(false)
@@ -104,7 +111,7 @@ const EditAccount = ({route, navigation}) => {
 
     const MailButtons = () => {
         return (
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, marginBottom: 10 }}>
+            <View style={styles.updateAndCancel}>
                 <PrimaryButton text="Update" onPress={() => handleMailUpdate()} />
                 <SecondaryButton text="Cancel" onPress={() => {
                     setEditMail(false)
@@ -116,7 +123,7 @@ const EditAccount = ({route, navigation}) => {
 
     const GraduationButtons = () => {
         return (
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 25, marginBottom: 10 }}>
+            <View style={styles.updateAndCancel}>
                 <PrimaryButton text="Update" onPress={() => handleGraduationUpdate()} />
                 <SecondaryButton text="Cancel" onPress={() => {
                     setEditGraduation(false)
@@ -206,7 +213,12 @@ const EditAccount = ({route, navigation}) => {
 export default EditAccount
 
 const styles = StyleSheet.create({
-
+    updateAndCancel:{
+        flexDirection: 'row', 
+        justifyContent: 'space-between', 
+        marginHorizontal: 25, 
+        marginBottom: 10
+    }
 })
 
 const itemStyles = StyleSheet.create({

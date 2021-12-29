@@ -17,6 +17,8 @@ import { useIsFocused, useNavigation } from '@react-navigation/core';
 import LottieView from 'lottie-react-native';
 import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from 'firebase/auth'
+import Lottie from 'lottie-react';
+import linking from './linking'
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator();
@@ -39,7 +41,6 @@ const Home = () => {
                 setBadgeNumber(data.cart.dishes.length)
             }
             setCartQuantity()
-
         });
 
         // Return the function to unsubscribe from the event so it gets removed on unmount
@@ -63,7 +64,7 @@ const Home = () => {
             }
         })}>
             <Tab.Screen name="Explore" component={Explore} />
-            <Tab.Screen name="Cart" component={Cart} options={{ tabBarBadge: badgeNumber }} />
+            <Tab.Screen name="Cart" component={Cart} options={{ tabBarBadge: 50 }} />
             <Tab.Screen name="Account" component={Account} />
         </Tab.Navigator>
     )
@@ -84,6 +85,11 @@ const RootNavigator = () => {
 
     const [isUserSignedIn, setIsUserSignedIn] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
+    useEffect(() => {
+        const script = document.createElement("script")
+        script.src = "https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"
+    }, [])
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, user => {
             if (user) {
@@ -113,7 +119,7 @@ const RootNavigator = () => {
     const AppStack = createNativeStackNavigator()
     const AppStackScreen = () => (
         <View style={{ backgroundColor: colors.background, flex: 1 }}>
-            <AppStack.Navigator screenOptions={{ animation: "slide_from_right" }}>
+            <AppStack.Navigator >
                 <AppStack.Screen name="Home" component={Home} options={{ headerShown: false }} />
                 <AppStack.Screen name="Edit_Account" component={EditAccount} options={{ title: "Edit Account" }} />
                 <AppStack.Screen name="Restaurant_Screen" component={RestaurantScreen} />
@@ -123,16 +129,14 @@ const RootNavigator = () => {
     )
 
     return (
-        <NavigationContainer theme={MyTheme}>
+        <NavigationContainer linking={linking} theme={MyTheme}>
             <View style={{ backgroundColor: colors.background, flex: 1 }}>
-                {isLoading ? <LottieView source={require('../assets/animations/logo.json')} autoPlay /> :
+                {isLoading ?
+                    <div style={{flex:1, justifyContent:'center', display:'flex'}}>
+                        <Lottie animationData={require('../assets/animations/logo.json')}/>
+                    </div> :
                     isUserSignedIn ? <AppStackScreen /> : <AuthStackScreen />
                 }
-                {/* {Platform.OS !== "web" ?
-                    isLoading ? <LottieView source={require('../assets/animations/logo.json')} autoPlay /> :
-                        isUserSignedIn ? <AppStackScreen /> : <AuthStackScreen />
-                    : null
-                } */}
             </View>
         </NavigationContainer>
     )

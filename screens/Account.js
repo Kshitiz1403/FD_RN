@@ -6,13 +6,13 @@ import { Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/core';
 import EditButton from '../components/EditButton';
 import { auth, firestore } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 const Account = () => {
-
     const [update, setUpdate] = useState(false)
 
     const UID = auth.currentUser.uid
-    const userRef = firestore.collection('users').doc(UID)
+    const userRef = doc(firestore, 'users',UID)
 
     const [nameOfUser, setNameOfUser] = useState('Hello user')
     const [phone, setPhone] = useState(9999999999)
@@ -20,24 +20,28 @@ const Account = () => {
     const [graduation, setGraduation] = useState(1999)
 
     useEffect(() => {
-        userRef.get().then((doc => {
-            if (doc.data()) {
-                setPhone(auth.currentUser.phoneNumber)
-                if(doc.data().Name){
-                    setNameOfUser(doc.data().Name)
+
+        const getDetails = async() =>{
+            const querySnapshot = await getDoc(userRef)
+            let data = querySnapshot.data()
+            setPhone(auth.currentUser.phoneNumber)
+            if (data) {
+                if(data.Name){
+                    setNameOfUser(data.Name)
                 }
-                if (doc.data().Email) {
-                    setEmail(doc.data().Email)
+                if (data.Email) {
+                    setEmail(data.Email)
                 }
-                if (doc.data().graduationYear) {
-                    setGraduation(doc.data().graduationYear)
+                if (data.graduationYear) {
+                    setGraduation(data.graduationYear)
                 }
                 // console.log(doc.data())
                 setUpdate(false)
-
+    
                 // get initial input state from firestore
             }
-        })).catch((err) => console.log(err))
+        }
+        getDetails()
         return
     }, [update!=false])
 
@@ -61,7 +65,7 @@ const Account = () => {
         return (
             <View style={[generalInfoStyles.container]}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 2, paddingVertical: 5 }}>
-                    <TextCustom style={{ textTransform: 'uppercase', fontSize: 18, fontWeight: '700' }}>{nameOfUser}</TextCustom>
+                    <Text style={{ textTransform: 'uppercase', fontSize: 18, fontWeight: '700', color:colors.text.default  }}>{nameOfUser}</Text>
                     <EditButton text="Edit" onPress={() => navigation.navigate('Edit_Account',{
                         toUpdate:setUpdate
                     })} />

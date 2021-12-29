@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/core'
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions, TextInput, Image, FlatList } from 'react-native'
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions, TextInput, Image, FlatList, Platform } from 'react-native'
 import TextCustom from '../constants/TextCustom'
 import { auth, firestore } from '../firebase'
 import { SimpleLineIcons } from '@expo/vector-icons';
@@ -10,6 +10,7 @@ import { Feather } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 import { Picker } from '@react-native-picker/picker'
 import PrimaryButton from '../components/PrimaryButton'
+import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore"; 
 
 const Explore = () => {
 
@@ -20,13 +21,19 @@ const Explore = () => {
     const [isAddressModalVisible, setIsAddressModalVisible] = useState(false)
     const [count, setCount] = useState(0)
 
+    const user = auth.currentUser
+    const UID = user.uid
+    const userRef = doc(firestore, 'users', UID)
+
     useEffect(() => {
-        firestore.collection('users').doc(UID).get().then((doc => {
-            let data = doc.data()
+        const getAddress = async() =>{
+            const querySnapshot = await getDoc(userRef)
+            let data = querySnapshot.data()
             if (data.address) {
                 setAddress({ roomNo: data.address.roomNumber, hostel: data.address.hostel })
             }
-        })).catch((err) => console.log(err))
+        }
+        getAddress()
         return
     }, [])
     useEffect(() => {
@@ -34,11 +41,15 @@ const Explore = () => {
         return
     }, [])
 
+    useEffect(() => {
+        navigation.setOptions({
+            headerTitle: () => <DeliverTo />
+        })
+    }, [address])
 
     const navigation = useNavigation()
 
-    const user = auth.currentUser
-    const UID = user.uid
+
 
     let handleHostelIdentifier
     if (address.hostel == 'girls') {
@@ -56,22 +67,18 @@ const Explore = () => {
 
 
     let restaurantArray = []
-    const getRestaurants = () => {
-        firestore.collection('restaurants').get()
-            .then((querySnapshot) => {
-                querySnapshot.forEach(documentSnapshot => {
-                    restaurantArray.push({ ...documentSnapshot.data(), id: documentSnapshot.id })
-                    setCount(count + 1)
-                    // Removing the setCount somehow disarms the function and hence is necessary for it work
-                })
-            })
-            .then(setRestaurants(restaurantArray))
+    const getRestaurants = async () => {
+        const querySnapshot = await getDocs(collection(firestore,'restaurants'))
+        querySnapshot.forEach((doc)=>{
+            restaurantArray.push({...doc.data(), id:doc.id})
+        })
+        setRestaurants(restaurantArray)
     }
     const DeliverTo = () => {
         return (
             <View>
-                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'flex-end' }} onPress={toggleAddressModal}>
-                    <TextCustom>Deliver to  </TextCustom>
+                <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent:Platform.OS=="ios"?"center":null }} onPress={toggleAddressModal}>
+                    <Text style={{color:colors.text.default}}>Deliver to  </Text>
                     <SimpleLineIcons name="arrow-down" size={14} color="white" />
                 </TouchableOpacity>
                 <TextCustom style={{ color: colors.primary }} numberOfLines={1}>{address.roomNo} Room number in {handleHostelIdentifier} Hostel </TextCustom>
@@ -88,25 +95,20 @@ const Explore = () => {
             <TextInput placeholder="Search for food, restaurant, etc." placeholderTextColor={colors.text.light} style={styles.searchInput} numberOfLines={1} />
         </View>
     }
-    navigation.setOptions({
-        headerTitle: () => <DeliverTo />
-    })
 
     const handleSaveAddress = async () => {
         setAddress({ roomNo: roomNumber, hostel: selectedHostel })
         toggleAddressModal()
 
-        await (firestore.collection('users').doc(UID).set({
-            address: {
-                roomNumber: parseInt(roomNumber),
-                hostel: selectedHostel
-            }
-        }, { merge: true }))
+        setDoc(userRef, {address: {
+            roomNumber: parseInt(roomNumber),
+            hostel: selectedHostel
+        }}, {merge:true})
     }
 
     const RestaurantItem = (props) => {
         return (
-            <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('Restaurant_Screen', { restaurantID: props.id, restaurantName: props.name, rating: props.rating, cuisines: props.cuisines })} style={[restaurantStyles.container, { width: useWindowDimensions().width }]}>
+            <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('Restaurant_Screen', { restaurantID: props.id, restaurantName: props.name})} style={[restaurantStyles.container, { width: useWindowDimensions().width }]}>
                 <View style={restaurantStyles.imageContainer}>
                     <Image source={{ uri: props.imageURI }} style={restaurantStyles.image} />
                 </View>

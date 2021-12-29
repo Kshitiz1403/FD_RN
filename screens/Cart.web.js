@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import colors from '../constants/colors'
 import { auth, firestore } from '../firebase';
 import { useIsFocused, useNavigation } from '@react-navigation/core';
@@ -8,6 +8,7 @@ import { Entypo } from '@expo/vector-icons';
 import LottieView from 'lottie-react-native';
 import { getAuth } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import Lottie from 'lottie-react';
 
 const Cart = ({ route, navigation }) => {
     const auth = getAuth()
@@ -24,6 +25,13 @@ const Cart = ({ route, navigation }) => {
     const [uniqueAllCartDishesData, setUniqueAllCartDishesData] = useState([])
     const [cartPrice, setCartPrice] = useState(0)
     const [isCartEmpty, setIsCartEmpty] = useState(true)
+
+
+    useEffect(() => {
+        const script = document.createElement("script")
+        script.src = "https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"
+    }, [])
+
 
 
     // re- renders every time the screen is brought to focus 
@@ -191,7 +199,9 @@ const Cart = ({ route, navigation }) => {
     return (<>
         {isCartEmpty ?
             <View style={emptyCartStyles.container}>
-                <LottieView source={require('../assets/animations/emptyCart.json')} autoPlay loop style={emptyCartStyles.animation} />
+                <div>
+                    <Lottie animationData={require('../assets/animations/emptyCart.json')} style={{ width: '90%' }} />
+                </div>
                 <View style={emptyCartStyles.textContainer}>
                     <Text style={emptyCartStyles.text}>{`My stomach is empty.`}</Text>
                     <Text style={emptyCartStyles.text}>{`Please add some items in it!`}</Text>
@@ -285,7 +295,7 @@ const restaurantStyles = StyleSheet.create({
 
 const emptyCartStyles = StyleSheet.create({
     container: {
-        justifyContent: 'center', alignItems: 'center', flex: 1
+        justifyContent: 'center', alignItems: 'center', flex: 1, width: '100%'
     },
     animation: {
         width: '90%'
@@ -295,6 +305,6 @@ const emptyCartStyles = StyleSheet.create({
         width: '100%'
     },
     text: {
-        color: colors.text.light, fontSize: 18, fontWeight: '700', width: '70%', textAlign:'center'
+        color: colors.text.light, fontSize: 18, fontWeight: '700', width: '70%', textAlign: 'center'
     }
 })

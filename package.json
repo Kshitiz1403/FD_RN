@@ -1,11 +1,14 @@
 {
-  "main": "node_modules/expo/AppEntry.js",
-  "scripts": {
+  "homepage": "https://kshitiz1403.github.io/FD_RN/",
+      "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "deploy": "gh-pages -d web-build",
+    "predeploy": "expo build:web"
+
   },
   "dependencies": {
     "@react-native-picker/picker": "2.1.0",
@@ -15,9 +18,10 @@
     "expo": "~43.0.2",
     "expo-firebase-recaptcha": "~2.0.2",
     "expo-status-bar": "~1.1.0",
-    "firebase": "8.2.3",
+    "firebase": "^9.6.1",
     "lottie-ios": "3.2.3",
-    "lottie-react-native": "^5.0.1",
+    "lottie-react": "^2.1.0",
+    "lottie-react-native": "4.0.3",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-native": "0.64.3",
@@ -28,7 +32,9 @@
     "react-native-webview": "11.13.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9"
+    "@babel/core": "^7.12.9",
+    "babel-preset-expo": "^9.0.2",
+    "gh-pages": "^3.2.3"
   },
   "private": true
 }
