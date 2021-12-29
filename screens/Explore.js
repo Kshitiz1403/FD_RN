@@ -93,7 +93,7 @@ const Explore = () => {
         return (
             <View>
                 <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent:Platform.OS=="ios"?"center":null }} onPress={toggleAddressModal}>
-                    <TextCustom>Deliver to  </TextCustom>
+                    <Text style={{color:colors.text.default}}>Deliver to  </Text>
                     <SimpleLineIcons name="arrow-down" size={14} color="white" />
                 </TouchableOpacity>
                 <TextCustom style={{ color: colors.primary }} numberOfLines={1}>{address.roomNo} Room number in {handleHostelIdentifier} Hostel </TextCustom>
