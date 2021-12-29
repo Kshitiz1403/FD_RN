@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/core'
-import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
+import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
 import React, { useRef, useState, useEffect } from 'react'
 import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
 import { auth } from '../firebase'
@@ -8,7 +8,8 @@ import { firebaseConfig } from '../firebaseConfig'
 import colors from '../constants/colors';
 import PrimaryButton from '../components/PrimaryButton'
 import SecondaryButton from '../components/SecondaryButton';
-import { PhoneAuthProvider, signInWithCredential, signInWithPhoneNumber } from "firebase/auth";
+import { PhoneAuthProvider, RecaptchaVerifier, signInWithCredential, signInWithPhoneNumber } from "firebase/auth";
+import { initializeApp } from 'firebase/app';
 
 const LoginScreen = () => {
 
@@ -17,18 +18,32 @@ const LoginScreen = () => {
     const [verificationId, setVerificationId] = useState();
 
     const handleSendOTP = async () => {
-        try {
-            const verificationId = await signInWithPhoneNumber(
-                auth,
-                `+91${phone}`,
-                recaptchaVerifier.current
-            );
-            setVerificationId(verificationId);
-            alert("OTP has been sent")
-        } catch (err) {
-            alert(err)
+        if (Platform.OS == "web") {
+            var phoneNumber = `+91${phone}`
+            console.log(phoneNumber)
+            setUpRecaptcha()
+            var appVerifier = window.recaptchaVerifier
+            signInWithPhoneNumber(auth, phoneNumber, appVerifier).then((confirmationResult) => {
+                alert("OTP has been sent")
+                setVerificationId(confirmationResult)
+            }).catch((err) => alert(err))
+        }
+
+        else {
+            try {
+                const verificationId = await signInWithPhoneNumber(
+                    auth,
+                    `+91${phone}`,
+                    recaptchaVerifier.current
+                );
+                setVerificationId(verificationId);
+                alert("OTP has been sent")
+            } catch (err) {
+                alert(err)
+            }
         }
     }
+
 
 
     const handleVerifyOTP = async () => {
@@ -37,7 +52,7 @@ const LoginScreen = () => {
                 verificationId.verificationId,
                 otp
             );
-            await signInWithCredential(auth,credential);
+            await signInWithCredential(auth, credential);
             alert("Phone verification successful")
         } catch (err) {
             alert(err)
@@ -47,17 +62,32 @@ const LoginScreen = () => {
     const recaptchaVerifier = useRef(null);
     const attemptInvisibleVerification = true;
 
+    auth.useDeviceLanguage()
+
+    const setUpRecaptcha = () => {
+        window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+            'size': 'invisible',
+            'callback': (response) => {
+                // reCAPTCHA solved, allow signInWithPhoneNumber.
+                onSignInSubmit();
+            }
+        }, auth);
+    }
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <KeyboardAvoidingView behavior={Platform.OS=='ios'?"padding":'height'}
+        // <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <KeyboardAvoidingView behavior={Platform.OS == 'ios' ? "padding" : 'height'}
             style={styles.container}
         >
-            <FirebaseRecaptchaVerifierModal
-                ref={recaptchaVerifier}
-                firebaseConfig={firebaseConfig}
-                attemptInvisibleVerification={attemptInvisibleVerification}
-            />
+            {Platform.OS != "web" ?
+                <FirebaseRecaptchaVerifierModal
+                    ref={recaptchaVerifier}
+                    firebaseConfig={firebaseConfig}
+                    attemptInvisibleVerification={attemptInvisibleVerification}
+                /> :
+                <View nativeID='recaptcha-container' />
+            }
+
             <View style={styles.inputContainer}>
                 <View style={[{ flexDirection: 'row', alignItems: 'center' }, styles.input]}>
                     <Text style={{ marginRight: 10, color: 'black' }}>
@@ -83,13 +113,12 @@ const LoginScreen = () => {
                     maxLength={6}
                 />
             </View>
-
             <View style={styles.buttonContainer}>
                 <PrimaryButton onPress={handleSendOTP} text="Send OTP" style={{ marginBottom: 10 }} />
                 <SecondaryButton text="Verify" onPress={handleVerifyOTP} />
             </View>
         </KeyboardAvoidingView>
-        </TouchableWithoutFeedback>
+        // </TouchableWithoutFeedback>
     )
 }
 
