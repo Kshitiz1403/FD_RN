@@ -108,7 +108,7 @@ const Explore = () => {
 
     const RestaurantItem = (props) => {
         return (
-            <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('Restaurant_Screen', { restaurantID: props.id, restaurantName: props.name, rating: props.rating, cuisines: props.cuisines })} style={[restaurantStyles.container, { width: useWindowDimensions().width }]}>
+            <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('Restaurant_Screen', { restaurantID: props.id, restaurantName: props.name})} style={[restaurantStyles.container, { width: useWindowDimensions().width }]}>
                 <View style={restaurantStyles.imageContainer}>
                     <Image source={{ uri: props.imageURI }} style={restaurantStyles.image} />
                 </View>
