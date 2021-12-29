@@ -305,6 +305,6 @@ const emptyCartStyles = StyleSheet.create({
         width: '100%'
     },
     text: {
-        color: colors.text.light, fontSize: 18, fontWeight: '700', width: '70%', textAlign:'center'
+        color: colors.text.light, fontSize: 18, fontWeight: '700', width: '70%', textAlign: 'center'
     }
 })
