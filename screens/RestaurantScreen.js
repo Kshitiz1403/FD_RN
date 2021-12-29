@@ -46,16 +46,6 @@ const RestaurantScreen = ({ route, navigation }) => {
         }
     }
 
-    // const getCart = () => {
-    //     firestore.collection('users').doc(UID).get()
-    //         .then((doc) => {
-    //             if (doc.data().cart.restaurantID == restaurantID) {
-    //                 setCartDishes(doc.data().cart.dishes)
-    //                 setCartPrice(doc.data().cart.cartTotal)
-    //             }
-    //         })
-    // }
-
     // Updates the cart details like dishes array, cart total, restaurantID in the database 
 
     const updateCart = () => {
@@ -67,16 +57,6 @@ const RestaurantScreen = ({ route, navigation }) => {
             }
         }, { merge: true })
     }
-
-    // const updateCart = async () => {
-    //     firestore.collection('users').doc(UID).set({
-    //         cart: {
-    //             dishes: cartDishes,
-    //             restaurantID: restaurantID,
-    //             cartTotal: cartPrice
-    //         }
-    //     }, { merge: true })
-    // }
 
     // triggers every time we add an item to the cart
     const addToCart = (id, price) => {
@@ -120,14 +100,6 @@ const RestaurantScreen = ({ route, navigation }) => {
                 cartTotal: price
             }
         }, { merge: true })
-
-        // firestore.collection('users').doc(UID).set({
-        //     cart: {
-        //         dishes: cartDishes,
-        //         restaurantID: restaurantID,
-        //         cartTotal: price
-        //     }
-        // }, { merge: true })
     }
 
     // triggers every time we remove an item to the cart
@@ -164,12 +136,6 @@ const RestaurantScreen = ({ route, navigation }) => {
         let dishesArr = data.dishes
         setDishes(dishesArr)
     }
-    // const getDishes = () => {
-    //     firestore.collection('restaurants').doc(restaurantID).get().then((querySnapshot) => {
-    //         let dishesArr = (querySnapshot.data().dishes)
-    //         setDishes(dishesArr)
-    //     })
-    // }
 
     const Cart = () => <View style={[cartStyles.container,
     { display: cartDishes.length == 0 ? "none" : "flex" }

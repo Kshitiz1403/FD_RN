@@ -12,7 +12,6 @@ const Account = () => {
     const [update, setUpdate] = useState(false)
 
     const UID = auth.currentUser.uid
-    // const userRef = firestore.collection('users').doc(UID)
     const userRef = doc(firestore, 'users',UID)
 
     const [nameOfUser, setNameOfUser] = useState('Hello user')
@@ -43,27 +42,6 @@ const Account = () => {
             }
         }
         getDetails()
-        
-
-        // userRef.get().then((doc => {
-        //     let data = doc.data()
-        //     setPhone(auth.currentUser.phoneNumber)
-        //     if (data) {
-        //         if(data.Name){
-        //             setNameOfUser(data.Name)
-        //         }
-        //         if (data.Email) {
-        //             setEmail(data.Email)
-        //         }
-        //         if (data.graduationYear) {
-        //             setGraduation(data.graduationYear)
-        //         }
-        //         // console.log(doc.data())
-        //         setUpdate(false)
-
-        //         // get initial input state from firestore
-        //     }
-        // })).catch((err) => console.log(err))
         return
     }, [update!=false])
 

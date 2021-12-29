@@ -34,12 +34,6 @@ const Explore = () => {
             }
         }
         getAddress()
-        // firestore.collection('users').doc(UID).get().then((doc => {
-        //     let data = doc.data()
-        //     if (data.address) {
-        //         setAddress({ roomNo: data.address.roomNumber, hostel: data.address.hostel })
-        //     }
-        // })).catch((err) => console.log(err))
         return
     }, [])
     useEffect(() => {
@@ -79,15 +73,6 @@ const Explore = () => {
             restaurantArray.push({...doc.data(), id:doc.id})
         })
         setRestaurants(restaurantArray)
-        // firestore.collection('restaurants').get()
-        //     .then((querySnapshot) => {
-        //         querySnapshot.forEach(documentSnapshot => {
-        //             restaurantArray.push({ ...documentSnapshot.data(), id: documentSnapshot.id })
-        //             setCount(count + 1)
-        //             // Removing the setCount somehow disarms the function and hence is necessary for it work
-        //         })
-        //     })
-        //     .then(setRestaurants(restaurantArray))
     }
     const DeliverTo = () => {
         return (
@@ -119,13 +104,6 @@ const Explore = () => {
             roomNumber: parseInt(roomNumber),
             hostel: selectedHostel
         }}, {merge:true})
-       
-        // await (firestore.collection('users').doc(UID).set({
-        //     address: {
-        //         roomNumber: parseInt(roomNumber),
-        //         hostel: selectedHostel
-        //     }
-        // }, { merge: true }))
     }
 
     const RestaurantItem = (props) => {

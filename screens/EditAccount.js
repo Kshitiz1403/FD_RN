@@ -45,25 +45,6 @@ const EditAccount = ({route, navigation}) => {
             }
         }
         getDetails()
-
-        // userRef.get().then((doc => {
-        //     let data = doc.data()
-        //     if (data) {
-        //         if (data.Name){
-        //             setNameOfUser(data.Name)
-        //         }
-        //         if (data.Email){
-        //             setEmail(data.Email)
-        //         }
-        //         if (data.graduationYear){
-        //             setGraduation(data.graduationYear)
-        //         }
-
-        //         // get initial input state from firestore
-
-        //         // when the user presses cancel on any form, the state should be set to the values from the firestore
-        //     }
-        // })).catch((err) => console.log(err))
         return
     }, [])
 
@@ -75,14 +56,6 @@ const EditAccount = ({route, navigation}) => {
                 setNameOfUser(data.Name)
             }
         }
-        // userRef.get().then((doc=>{
-        //     let data = doc.data()
-        //     if (data){
-        //         if (data.Name){
-        //             setNameOfUser(data.Name)
-        //         }
-        //     }
-        // }))
     }
 
     const getEmail = async() =>{
@@ -94,14 +67,6 @@ const EditAccount = ({route, navigation}) => {
                 setEmail(data.Email)
             }
         }
-        // userRef.get().then((doc=>{
-        //     let data = doc.data()
-        //     if (data){
-        //         if (data.Email){
-        //             setEmail(data.Email)
-        //         }
-        //     }
-        // }))
     }
 
     const getGraduation = async() =>{
@@ -112,14 +77,6 @@ const EditAccount = ({route, navigation}) => {
                 setGraduation(data.graduationYear)
             }
         }
-        // userRef.get().then((doc=>{
-        //     let data = doc.data()
-        //     if (data){
-        //         if (data.graduationYear){
-        //             setGraduation(data.graduationYear)
-        //         }
-        //     }
-        // }))
     }
 
     const handleNameUpdate =  () => {
@@ -128,35 +85,17 @@ const EditAccount = ({route, navigation}) => {
         toUpdate(true)
     }
 
-    // const handleNameUpdate = async () => {
-    //     userRef.set({ Name: nameOfUser }, { merge: true })
-    //     .then(()=>{setEditName(false); toUpdate(true)})
-    //     .catch((err)=>console.log("Error on updating name- ", err))
-    // }
-
     const handleMailUpdate = () => {
         setDoc(userRef, { Email: email }, { merge: true })
         setEditMail(false)
         toUpdate(true)
     }
 
-    // const handleMailUpdate = () => {
-    //     userRef.set({ Email: email }, { merge: true })
-    //         .then(()=>{setEditMail(false); toUpdate(true)})
-    //         .catch((err) => console.log("Error on updating email- ", err))
-    // }
-
     const handleGraduationUpdate = () => {
         setDoc(userRef, {graduationYear: parseInt(graduation)},{merge:true})
         setEditGraduation(false)
         toUpdate(true)
     }
-
-    // const handleGraduationUpdate = () => {
-    //     userRef.set({graduationYear: parseInt(graduation)},{merge:true})
-    //     .then(()=>{setEditGraduation(false); toUpdate(true)})
-    //     .catch((err) => console.log("Error on updating graduation- ", err))
-    // }
 
     const NameButtons = () => {
         return (

@@ -40,12 +40,6 @@ const Home = () => {
                 setBadgeNumber(data.cart.dishes.length)
             }
             setCartQuantity()
-
-            // firestore.collection('users').doc(UID).get().then((doc) => {
-            //     let data = doc.data()
-            //     // sets the tab bar badge to the amount of items in the cart 
-            //     setBadgeNumber(data.cart.dishes.length)
-            // })
         });
 
         // Return the function to unsubscribe from the event so it gets removed on unmount
