@@ -18,6 +18,7 @@ import LottieView from 'lottie-react-native';
 import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from 'firebase/auth'
 import Lottie from 'lottie-react';
+import linking from './linking'
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator();
@@ -63,7 +64,7 @@ const Home = () => {
             }
         })}>
             <Tab.Screen name="Explore" component={Explore} />
-            <Tab.Screen name="Cart" component={Cart} options={{ tabBarBadge: badgeNumber }} />
+            <Tab.Screen name="Cart" component={Cart} options={{ tabBarBadge: 50 }} />
             <Tab.Screen name="Account" component={Account} />
         </Tab.Navigator>
     )
@@ -128,7 +129,7 @@ const RootNavigator = () => {
     )
 
     return (
-        <NavigationContainer theme={MyTheme}>
+        <NavigationContainer linking={linking} theme={MyTheme}>
             <View style={{ backgroundColor: colors.background, flex: 1 }}>
                 {isLoading ?
                     <div style={{flex:1, justifyContent:'center', display:'flex'}}>
