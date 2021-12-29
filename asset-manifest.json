@@ -1,0 +1,36 @@
+{
+  "files": {
+    "app.js": "/expo-gh-pages/static/js/app.6374e1c9.chunk.js",
+    "app.js.map": "/expo-gh-pages/static/js/app.6374e1c9.chunk.js.map",
+    "runtime~app.js": "/expo-gh-pages/static/js/runtime~app.57d3d678.js",
+    "runtime~app.js.map": "/expo-gh-pages/static/js/runtime~app.57d3d678.js.map",
+    "static/js/2.da05c33b.chunk.js": "/expo-gh-pages/static/js/2.da05c33b.chunk.js",
+    "static/js/2.da05c33b.chunk.js.map": "/expo-gh-pages/static/js/2.da05c33b.chunk.js.map",
+    "fonts/AntDesign.ttf": "/expo-gh-pages/./fonts/AntDesign.ttf",
+    "fonts/Entypo.ttf": "/expo-gh-pages/./fonts/Entypo.ttf",
+    "fonts/Feather.ttf": "/expo-gh-pages/./fonts/Feather.ttf",
+    "fonts/FontAwesome.ttf": "/expo-gh-pages/./fonts/FontAwesome.ttf",
+    "fonts/FontAwesome5_Brands.ttf": "/expo-gh-pages/./fonts/FontAwesome5_Brands.ttf",
+    "fonts/FontAwesome5_Solid.ttf": "/expo-gh-pages/./fonts/FontAwesome5_Solid.ttf",
+    "fonts/Fontisto.ttf": "/expo-gh-pages/./fonts/Fontisto.ttf",
+    "fonts/Foundation.ttf": "/expo-gh-pages/./fonts/Foundation.ttf",
+    "fonts/Ionicons.ttf": "/expo-gh-pages/./fonts/Ionicons.ttf",
+    "fonts/MaterialCommunityIcons.ttf": "/expo-gh-pages/./fonts/MaterialCommunityIcons.ttf",
+    "fonts/MaterialIcons.ttf": "/expo-gh-pages/./fonts/MaterialIcons.ttf",
+    "fonts/SimpleLineIcons.ttf": "/expo-gh-pages/./fonts/SimpleLineIcons.ttf",
+    "favicon-16.png": "/expo-gh-pages/favicon-16.png",
+    "favicon-32.png": "/expo-gh-pages/favicon-32.png",
+    "favicon.ico": "/expo-gh-pages/favicon.ico",
+    "index.html": "/expo-gh-pages/index.html",
+    "manifest.json": "/expo-gh-pages/manifest.json",
+    "serve.json": "/expo-gh-pages/serve.json",
+    "static/js/2.da05c33b.chunk.js.LICENSE.txt": "/expo-gh-pages/static/js/2.da05c33b.chunk.js.LICENSE.txt",
+    "static/media/nonveg.png": "/expo-gh-pages/static/media/nonveg.352531a6.png",
+    "static/media/veg.png": "/expo-gh-pages/static/media/veg.0f6892d0.png"
+  },
+  "entrypoints": [
+    "static/js/runtime~app.57d3d678.js",
+    "static/js/2.da05c33b.chunk.js",
+    "static/js/app.6374e1c9.chunk.js"
+  ]
+}
