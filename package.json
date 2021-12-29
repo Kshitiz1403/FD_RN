@@ -1,10 +1,14 @@
 {
-  "scripts": {
+  "homepage": "https://kshitiz1403.github.io/FD_RN/",
+      "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "deploy": "gh-pages -d web-build",
+    "predeploy": "expo build:web"
+
   },
   "dependencies": {
     "@react-native-picker/picker": "2.1.0",
@@ -29,7 +33,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
-    "babel-preset-expo": "^9.0.2"
+    "babel-preset-expo": "^9.0.2",
+    "gh-pages": "^3.2.3"
   },
   "private": true
 }
