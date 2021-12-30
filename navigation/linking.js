@@ -1,13 +1,17 @@
 const config = {
     screens: {
-        Explore: {
-            path: "Explore"
-        },
-        Account: {
-            path: "Account"
-        },
-        Cart: {
-            path: "Cart"
+        Home:{
+            screens:{
+                Explore: {
+                    path: "Explore"
+                },
+                Account: {
+                    path: "Account"
+                },
+                Cart: {
+                    path: "Cart"
+                }
+            }
         },
         Restaurant_Screen: {
             path: "Restaurant/:restaurantID/:restaurantName",
