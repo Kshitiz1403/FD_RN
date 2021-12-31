@@ -28,8 +28,11 @@ const Cart = ({ route, navigation }) => {
 
     // re- renders every time the screen is brought to focus 
     useEffect(() => {
-        fetchCartInfo()
-    }, [isFocused == true])
+        const unsubscribe = navigation.addListener('focus', () => {
+            fetchCartInfo()
+        })
+        return unsubscribe
+    }, [navigation])
 
     // sets the tab bar badge to the amount of items in the cart
     useEffect(() => {
