@@ -11,6 +11,7 @@ import Modal from "react-native-modal";
 import { Picker } from '@react-native-picker/picker'
 import PrimaryButton from '../components/PrimaryButton'
 import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore"; 
+import Shimmer from '../components/Shimmer'
 
 const Explore = () => {
 
@@ -20,6 +21,7 @@ const Explore = () => {
     const [restaurants, setRestaurants] = useState([])
     const [isAddressModalVisible, setIsAddressModalVisible] = useState(false)
     const [count, setCount] = useState(0)
+    const [isLoaded, setIsLoaded] = useState(false)
 
     const user = auth.currentUser
     const UID = user.uid
@@ -73,6 +75,7 @@ const Explore = () => {
             restaurantArray.push({...doc.data(), id:doc.id})
         })
         setRestaurants(restaurantArray)
+        setIsLoaded(true)
     }
     const DeliverTo = () => {
         return (
@@ -106,6 +109,39 @@ const Explore = () => {
         }}, {merge:true})
     }
 
+    const LoadingRestaurant = () => {
+        const Item = () =>{
+            return(
+                <View style={[restaurantStyles.container, { width: useWindowDimensions().width }]}>
+                    <View style={restaurantStyles.imageContainer}>
+                        <View style={{ width: '100%', aspectRatio: 1, overflow: 'hidden', borderRadius: 5, }}>
+                            <Shimmer width='100%' height='100%' />
+                        </View>
+                    </View>
+                    <View style={restaurantStyles.detailsContainer}>
+                        <View style={{ width: 150, height: 15, marginBottom: 5 }}>
+                            <Shimmer width={'100%'} height={'100%'} />
+                        </View>
+                        <View style={{ width: 50, height: 15, marginBottom: 5 }}>
+                            <Shimmer width={'100%'} height={'100%'} />
+                        </View>
+                        <View style={{ width: 100, height: 15 }}>
+                            <Shimmer width={'100%'} height={'100%'} />
+                        </View>
+                    </View>
+                </View>
+            )
+        }
+        return(
+            <>
+            <Item/>
+            <Item/>
+            <Item/>
+            <Item/>
+            </>
+        )
+        
+    }
     const RestaurantItem = (props) => {
         return (
             <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('Restaurant_Screen', { restaurantID: props.id, restaurantName: props.name})} style={[restaurantStyles.container, { width: useWindowDimensions().width }]}>
@@ -163,12 +199,16 @@ const Explore = () => {
                 </View>
             </Modal>
 
+            <>
+            {!isLoaded ?<LoadingRestaurant/>:
             <FlatList
                 showsHorizontalScrollIndicator={false}
                 data={restaurants}
                 renderItem={({ item }) => <RestaurantItem name={item.restaurantName} rating={item.rating} cuisines={item.cuisines} imageURI={item.imageURI} id={item.id} />}
                 keyExtractor={item => item.id}
             />
+            }
+            </>
         </View>
     )
 }
