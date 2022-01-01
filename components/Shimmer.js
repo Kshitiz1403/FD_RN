@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 const styles = StyleSheet.create({
   shimmer: {
     overflow: 'hidden',
-    backgroundColor: '#eee',
+    backgroundColor: '#BBBBBB',
   },
 });
 
@@ -13,7 +13,7 @@ const SCREEN_WIDTH = Dimensions.get('screen').width;
 const START = -1;
 const END = 1;
 const DURATION = 2000;
-const COLORS = ['#eee', '#ddd', '#eee'];
+const COLORS = ['#BBBBBB', '#A1A1A1', '#BBBBBB'];
 const LOCATIONS = [0.3, 0.5, 0.7];
 const ANIMATION = new Animated.Value(START);
 
