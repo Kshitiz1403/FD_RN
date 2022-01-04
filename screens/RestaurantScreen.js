@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { FlatList, Image, Platform, Pressable, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import colors from "../constants/colors";
 import { auth, firestore } from "../firebase";
-import DishItem from "../components/DishItem";
+import DishItem, { LoadingDishItem } from "../components/DishItem";
 import { useIsFocused } from "@react-navigation/core";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
@@ -27,6 +27,7 @@ const RestaurantScreen = ({ route, navigation }) => {
     const [doNotRemoveState, setDoNotRemoveState] = useState(0)
 
     const [cartPrice, setCartPrice] = useState(0)
+    const [isLoaded, setIsLoaded] = useState(false)
 
     // getting the dishes which are added in the cart
     useEffect(() => {
@@ -38,12 +39,13 @@ const RestaurantScreen = ({ route, navigation }) => {
     const getCart = async () => {
         const querySnapshot = await getDoc(userRef)
         let data = querySnapshot.data()
-        if (data.cart){
+        if (data.cart) {
             if (data.cart.restaurantID == restaurantID) {
                 setCartDishes(data.cart.dishes)
                 setCartPrice(data.cart.cartTotal)
             }
         }
+        setIsLoaded(true)
     }
 
     // Updates the cart details like dishes array, cart total, restaurantID in the database 
@@ -130,7 +132,7 @@ const RestaurantScreen = ({ route, navigation }) => {
     }
 
     // gets all the dishes from the restaurant and updates the state to an array of dishIDs
-    const getDishes = async() => {
+    const getDishes = async () => {
         const querySnapshot = await getDoc(restaurantRef)
         let data = querySnapshot.data()
         let dishesArr = data.dishes
@@ -169,8 +171,22 @@ const RestaurantScreen = ({ route, navigation }) => {
 
     </View>
 
+    const LoadingDishes = () => {
+        return (
+            <ScrollView>
+                <LoadingDishItem image description/>
+                <LoadingDishItem description/>
+                <LoadingDishItem description/>
+                <LoadingDishItem image description/>
+            </ScrollView>
+        )
+    }
+
+
     return (
         <SafeAreaView style={styles.container}>
+
+        {!isLoaded?<LoadingDishes/>:
             <FlatList
                 data={dishes}
                 renderItem={({ item }) =>
@@ -189,6 +205,7 @@ const RestaurantScreen = ({ route, navigation }) => {
                 }
                 keyExtractor={item => item.dishID}
             />
+        }
             <Cart />
         </SafeAreaView>
     );

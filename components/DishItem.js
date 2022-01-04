@@ -2,6 +2,7 @@ import React from 'react'
 import { Image, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import colors from '../constants/colors';
 import { AntDesign } from '@expo/vector-icons';
+import Shimmer from './Shimmer';
 
 
 const DishItem = (props) => (
@@ -20,7 +21,7 @@ const DishItem = (props) => (
             </View>
         </View>
         <View style={[dishStyles.imageContainer, { justifyContent: props.image ? 'flex-end' : 'center' }]}>
-            <Image source={{ uri: props.image?props.image:null }} style={dishStyles.image} />
+            <Image source={{ uri: props.image ? props.image : null }} style={dishStyles.image} />
 
             <View style={dishStyles.button}>
                 {!(props.cartDishes).includes(props.id) ?
@@ -48,6 +49,44 @@ const DishItem = (props) => (
     </View>
 );
 
+export const LoadingDishItem = (props) => {
+    return (
+        <View style={[dishStyles.container, { height: props.image ? 150 : 100 }]}>
+            <View style={dishStyles.detailsContainer}>
+                <View style={dishStyles.vegIndicatorContainer}>
+                    <View style={dishStyles.vegIndicator}>
+                        <Shimmer width={'100%'} height={'100%'} />
+                    </View>
+                </View>
+                <View style={[dishStyles.detailsText,]}>
+                    <View style={{ height: 15, width: 100, marginBottom: 5 }}>
+                        <Shimmer width={'100%'} height={'100%'} />
+                    </View>
+                    <View style={{ height: 15, width: 50, marginBottom: 5 }}>
+                        <Shimmer width={'100%'} height={'100%'} />
+                    </View>
+                    {props.description ?
+                        <View style={{ height: 25, width: '90%' }}>
+                            <Shimmer width={'100%'} height={'100%'} />
+                        </View>
+                        :null
+                    }
+
+                </View>
+            </View>
+            <View style={[dishStyles.imageContainer, { justifyContent: props.image ? 'flex-end' : 'center' }]}>
+                {props.image ?
+                    <View style={[dishStyles.image, { overflow: "hidden" }]}>
+                        <Shimmer width={'100%'} height={'100%'} />
+                    </View>
+                    :
+                    <View style={[dishStyles.button, { overflow: 'hidden' }]}>
+                        <Shimmer width={'100%'} height={'100%'} />
+                    </View>}
+            </View>
+        </View>
+    )
+}
 export default DishItem
 
 
