@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { FlatList, Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import colors from '../constants/colors'
 import { auth, firestore } from '../firebase';
 import { useIsFocused, useNavigation } from '@react-navigation/core';
-import DishItem from '../components/DishItem';
+import DishItem, { LoadingDishItem } from '../components/DishItem';
 import { Entypo } from '@expo/vector-icons';
 import LottieView from 'lottie-react-native';
 import { getAuth } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import Shimmer from '../components/Shimmer';
 
 const Cart = ({ route, navigation }) => {
     const auth = getAuth()
@@ -23,8 +24,8 @@ const Cart = ({ route, navigation }) => {
     const [restaurantData, setRestaurantData] = useState({})
     const [uniqueAllCartDishesData, setUniqueAllCartDishesData] = useState([])
     const [cartPrice, setCartPrice] = useState(0)
-    const [isCartEmpty, setIsCartEmpty] = useState(true)
-
+    const [isCartEmpty, setIsCartEmpty] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
 
     // re- renders every time the screen is brought to focus 
     useEffect(() => {
@@ -57,6 +58,9 @@ const Cart = ({ route, navigation }) => {
         if (data.cart) {
             // array of all the IDs of dishes added in the cart of the user
             cartDishIDsArr = data.cart.dishes
+            if (cartDishIDsArr == 0) {
+                setIsCartEmpty(true)
+            }
             setCartDishIDs(data.cart.dishes)
             setCartPrice(data.cart.cartTotal)
 
@@ -67,6 +71,7 @@ const Cart = ({ route, navigation }) => {
             const restaurantRef = doc(firestore, 'restaurants', restoID)
             const restaurantSnapshot = await getDoc(restaurantRef)
 
+            setIsLoading(false)
             // restaurant data stored in restoData
             let restoData = restaurantSnapshot.data()
             setRestaurantData(restoData)
@@ -95,6 +100,9 @@ const Cart = ({ route, navigation }) => {
             }
             // setting only the unique cart dishes which is later used to render Flatlist. Used for rendering only the unique dishes in the flatlist and later increasing the quantity only without adding more items to Flatlist 
             setUniqueAllCartDishesData(unique)
+        }
+        else { //i.e. the cart doesn't exist
+            setIsCartEmpty(true)
         }
     }
 
@@ -191,36 +199,77 @@ const Cart = ({ route, navigation }) => {
         </View>
     )
 
-    return (<>
-        {isCartEmpty ?
-            <View style={emptyCartStyles.container}>
-                <LottieView source={require('../assets/animations/emptyCart.json')} autoPlay loop style={emptyCartStyles.animation} />
-                <View style={emptyCartStyles.textContainer}>
-                    <Text style={emptyCartStyles.text}>{`My stomach is empty.`}</Text>
-                    <Text style={emptyCartStyles.text}>{`Please add some items in it!`}</Text>
+    const LoadingRestaurant = () => {
+        return (
+            <View style={restaurantStyles.container}>
+                <View style={restaurantStyles.imageContainer}>
+                    <View style={{ width: '100%', aspectRatio: 1, overflow: 'hidden', borderRadius: 5, }}>
+                        <Shimmer width='100%' height='100%' />
+                    </View>
+                </View>
+                <View>
+                    <View style={{ width: 150, height: 15, marginBottom: 5 }}>
+                        <Shimmer width={'100%'} height={'100%'} />
+                    </View>
+                    <View style={{ width: 50, height: 15, marginBottom: 5 }}>
+                        <Shimmer width={'100%'} height={'100%'} />
+                    </View>
+                    <View style={{ width: 100, height: 15 }}>
+                        <Shimmer width={'100%'} height={'100%'} />
+                    </View>
                 </View>
             </View>
-            :
-            <View style={styles.container}>
-                <RestaurantDetails />
-                <FlatList
-                    style={{ backgroundColor: colors.dark, paddingHorizontal: 10 }}
-                    data={uniqueAllCartDishesData}
-                    keyExtractor={item => item.dishID}
-                    renderItem={({ item }) => (
-                        <DishItem
-                            cartDishes={cartDishIDs}
-                            dishName={item.name}
-                            id={item.dishID}
-                            price={item.price}
-                            isNonVeg={item.nonveg}
-                            getQuantity={getQuantity(item.dishID)}
-                            removeFromCart={() => removeFromCart(item.dishID)}
-                            addToCart={() => addToCart(item.dishID)}
-                        />
-                    )}
-                />
+        )
+    }
+    const Loading = () => {
+        return (
+            <View>
+                <LoadingRestaurant />
+                <View style={{ paddingHorizontal: 10 }}>
+                    <LoadingDishItem />
+                    <LoadingDishItem />
+                    <LoadingDishItem />
+                </View>
             </View>
+        )
+    }
+    return (<>
+        {isLoading ?
+            <Loading />
+            :
+            <>
+                {isCartEmpty
+                    ?
+                    <View style={emptyCartStyles.container}>
+                        <LottieView source={require('../assets/animations/emptyCart.json')} autoPlay loop style={emptyCartStyles.animation} />
+                        <View style={emptyCartStyles.textContainer}>
+                            <Text style={emptyCartStyles.text}>{`My stomach is empty.`}</Text>
+                            <Text style={emptyCartStyles.text}>{`Please add some items in it!`}</Text>
+                        </View>
+                    </View>
+                    :
+                    <ScrollView style={styles.container} overScrollMode='never'>
+                        <RestaurantDetails />
+                        <FlatList
+                            style={{ backgroundColor: colors.dark, paddingHorizontal: 10 }}
+                            data={uniqueAllCartDishesData}
+                            keyExtractor={item => item.dishID}
+                            renderItem={({ item }) => (
+                                <DishItem
+                                    cartDishes={cartDishIDs}
+                                    dishName={item.name}
+                                    id={item.dishID}
+                                    price={item.price}
+                                    isNonVeg={item.nonveg}
+                                    getQuantity={getQuantity(item.dishID)}
+                                    removeFromCart={() => removeFromCart(item.dishID)}
+                                    addToCart={() => addToCart(item.dishID)}
+                                />
+                            )}
+                        />
+                    </ScrollView>
+                }
+            </>
         }
     </>
     )
@@ -298,6 +347,6 @@ const emptyCartStyles = StyleSheet.create({
         width: '100%'
     },
     text: {
-        color: colors.text.light, fontSize: 18, fontWeight: '700', width: '70%', textAlign:'center'
+        color: colors.text.light, fontSize: 18, fontWeight: '700', width: '70%', textAlign: 'center'
     }
 })
