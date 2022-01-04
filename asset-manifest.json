@@ -1,11 +1,11 @@
 {
   "files": {
-    "app.js": "/FD_RN/static/js/app.95c83250.chunk.js",
-    "app.js.map": "/FD_RN/static/js/app.95c83250.chunk.js.map",
+    "app.js": "/FD_RN/static/js/app.0651c667.chunk.js",
+    "app.js.map": "/FD_RN/static/js/app.0651c667.chunk.js.map",
     "runtime~app.js": "/FD_RN/static/js/runtime~app.0e4090d7.js",
     "runtime~app.js.map": "/FD_RN/static/js/runtime~app.0e4090d7.js.map",
-    "static/js/2.72fa336b.chunk.js": "/FD_RN/static/js/2.72fa336b.chunk.js",
-    "static/js/2.72fa336b.chunk.js.map": "/FD_RN/static/js/2.72fa336b.chunk.js.map",
+    "static/js/2.b7eeaf3f.chunk.js": "/FD_RN/static/js/2.b7eeaf3f.chunk.js",
+    "static/js/2.b7eeaf3f.chunk.js.map": "/FD_RN/static/js/2.b7eeaf3f.chunk.js.map",
     "fonts/AntDesign.ttf": "/FD_RN/./fonts/AntDesign.ttf",
     "fonts/Entypo.ttf": "/FD_RN/./fonts/Entypo.ttf",
     "fonts/Feather.ttf": "/FD_RN/./fonts/Feather.ttf",
@@ -24,13 +24,13 @@
     "index.html": "/FD_RN/index.html",
     "manifest.json": "/FD_RN/manifest.json",
     "serve.json": "/FD_RN/serve.json",
-    "static/js/2.72fa336b.chunk.js.LICENSE.txt": "/FD_RN/static/js/2.72fa336b.chunk.js.LICENSE.txt",
+    "static/js/2.b7eeaf3f.chunk.js.LICENSE.txt": "/FD_RN/static/js/2.b7eeaf3f.chunk.js.LICENSE.txt",
     "static/media/nonveg.png": "/FD_RN/static/media/nonveg.352531a6.png",
     "static/media/veg.png": "/FD_RN/static/media/veg.0f6892d0.png"
   },
   "entrypoints": [
     "static/js/runtime~app.0e4090d7.js",
-    "static/js/2.72fa336b.chunk.js",
-    "static/js/app.95c83250.chunk.js"
+    "static/js/2.b7eeaf3f.chunk.js",
+    "static/js/app.0651c667.chunk.js"
   ]
 }
