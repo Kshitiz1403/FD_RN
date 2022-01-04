@@ -110,34 +110,11 @@ const Explore = () => {
     }
 
     const LoadingRestaurant = () => {
-        const Item = () =>{
-            return(
-                <View style={[restaurantStyles.container, { width: useWindowDimensions().width }]}>
-                    <View style={restaurantStyles.imageContainer}>
-                        <View style={{ width: '100%', aspectRatio: 1, overflow: 'hidden', borderRadius: 5, }}>
-                            <Shimmer width='100%' height='100%' />
-                        </View>
-                    </View>
-                    <View style={restaurantStyles.detailsContainer}>
-                        <View style={{ width: 150, height: 15, marginBottom: 5 }}>
-                            <Shimmer width={'100%'} height={'100%'} />
-                        </View>
-                        <View style={{ width: 50, height: 15, marginBottom: 5 }}>
-                            <Shimmer width={'100%'} height={'100%'} />
-                        </View>
-                        <View style={{ width: 100, height: 15 }}>
-                            <Shimmer width={'100%'} height={'100%'} />
-                        </View>
-                    </View>
-                </View>
-            )
-        }
         return(
             <>
-            <Item/>
-            <Item/>
-            <Item/>
-            <Item/>
+            <LoadingRestaurantItem/>
+            <LoadingRestaurantItem/>
+            <LoadingRestaurantItem/>
             </>
         )
         
@@ -213,6 +190,28 @@ const Explore = () => {
     )
 }
 
+export const LoadingRestaurantItem = () =>{
+    return(
+        <View style={[restaurantStyles.container, { width: useWindowDimensions().width }]}>
+            <View style={restaurantStyles.imageContainer}>
+                <View style={{ width: '100%', aspectRatio: 1, overflow: 'hidden', borderRadius: 5, }}>
+                    <Shimmer width='100%' height='100%' />
+                </View>
+            </View>
+            <View style={restaurantStyles.detailsContainer}>
+                <View style={{ width: 150, height: 15, marginBottom: 5 }}>
+                    <Shimmer width={'100%'} height={'100%'} />
+                </View>
+                <View style={{ width: 50, height: 15, marginBottom: 5 }}>
+                    <Shimmer width={'100%'} height={'100%'} />
+                </View>
+                <View style={{ width: 100, height: 15 }}>
+                    <Shimmer width={'100%'} height={'100%'} />
+                </View>
+            </View>
+        </View>
+    )
+}
 
 export default Explore
 
