@@ -21,7 +21,7 @@ const DishItem = (props) => (
             </View>
         </View>
         <View style={[dishStyles.imageContainer, { justifyContent: props.image ? 'flex-end' : 'center' }]}>
-            <Image source={{ uri: props.image?props.image:null }} style={dishStyles.image} />
+            <Image source={{ uri: props.image ? props.image : null }} style={dishStyles.image} />
 
             <View style={dishStyles.button}>
                 {!(props.cartDishes).includes(props.id) ?
@@ -65,9 +65,13 @@ export const LoadingDishItem = (props) => {
                     <View style={{ height: 15, width: 50, marginBottom: 5 }}>
                         <Shimmer width={'100%'} height={'100%'} />
                     </View>
-                    <View style={{ height: 25, width: '90%' }}>
-                        <Shimmer width={'100%'} height={'100%'} />
-                    </View>
+                    {props.description ?
+                        <View style={{ height: 25, width: '90%' }}>
+                            <Shimmer width={'100%'} height={'100%'} />
+                        </View>
+                        :null
+                    }
+
                 </View>
             </View>
             <View style={[dishStyles.imageContainer, { justifyContent: props.image ? 'flex-end' : 'center' }]}>

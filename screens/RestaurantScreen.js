@@ -174,10 +174,10 @@ const RestaurantScreen = ({ route, navigation }) => {
     const LoadingDishes = () => {
         return (
             <ScrollView>
-                <LoadingDishItem image />
-                <LoadingDishItem />
-                <LoadingDishItem />
-                <LoadingDishItem image />
+                <LoadingDishItem image description/>
+                <LoadingDishItem description/>
+                <LoadingDishItem description/>
+                <LoadingDishItem image description/>
             </ScrollView>
         )
     }
