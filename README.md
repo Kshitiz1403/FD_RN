@@ -7,6 +7,8 @@ Mobile app and website to solve the problem of less options and overpriced food 
 
 [![alt text](https://camo.githubusercontent.com/5fa5c16e14a9a4df1b87a973c08de220036673c2d32e7cc3399a34e4d9cff534/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f52756e73253230776974682532304578706f253230476f2d3436333045422e7376673f7374796c653d666c61742d737175617265266c6f676f3d4558504f266c6162656c436f6c6f723d663366336633266c6f676f436f6c6f723d303030)](https://expo.dev/@kshitiz1403/FD)
 
+https://kshitiz1403.github.io/FD_RN
+
 
 ### 🔢 Instructions to Preview (iOS users, see note below)
 
