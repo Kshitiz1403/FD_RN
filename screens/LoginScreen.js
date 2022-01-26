@@ -117,6 +117,12 @@ const LoginScreen = () => {
                 <PrimaryButton onPress={handleSendOTP} text="Send OTP" style={{ marginBottom: 10 }} />
                 <SecondaryButton text="Verify" onPress={handleVerifyOTP} />
             </View>
+            <View style={{ alignItems: 'center', position:'absolute', bottom:50 }}>
+                <Text style={{ color: 'white' }}>For demo, use credentials- </Text>
+                <Text style={{ color: 'white' }}>Mobile - 9876543210 </Text>
+                <Text style={{ color: 'white' }}>OTP - 123456 </Text>
+
+            </View>
         </KeyboardAvoidingView>
         // </TouchableWithoutFeedback>
     )
