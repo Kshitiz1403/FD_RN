@@ -38,7 +38,7 @@ const Home = () => {
             const setCartQuantity = async () => {
                 const querySnapshot = await getDoc(userRef)
                 let data = querySnapshot.data()
-                setBadgeNumber(data.cart.dishes.length)
+                setBadgeNumber(data?.cart?.dishes.length)
             }
             setCartQuantity()
         });
@@ -64,7 +64,7 @@ const Home = () => {
             }
         })}>
             <Tab.Screen name="Explore" component={Explore} />
-            <Tab.Screen name="Cart" component={Cart} options={{ tabBarBadge: 50 }} />
+            <Tab.Screen name="Cart" component={Cart} options={{ tabBarBadge: badgeNumber }} />
             <Tab.Screen name="Account" component={Account} />
         </Tab.Navigator>
     )

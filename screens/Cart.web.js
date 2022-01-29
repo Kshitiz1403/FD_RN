@@ -64,6 +64,13 @@ const Cart = ({ route, navigation }) => {
         let data = userSnapshot.data()
         let cartDishIDsArr = []
         let allDishesArr = []
+        try{
+            data.cart
+        }
+        catch{
+            setIsLoading(false)
+            return setIsCartEmpty(true)
+        }
         if (data.cart) {
             // array of all the IDs of dishes added in the cart of the user
             cartDishIDsArr = data.cart.dishes
@@ -111,6 +118,7 @@ const Cart = ({ route, navigation }) => {
             setUniqueAllCartDishesData(unique)
         }
         else { //i.e. the cart doesn't exist
+            setIsLoading(false)
             setIsCartEmpty(true)
         }
     }

@@ -39,7 +39,7 @@ const RestaurantScreen = ({ route, navigation }) => {
     const getCart = async () => {
         const querySnapshot = await getDoc(userRef)
         let data = querySnapshot.data()
-        if (data.cart) {
+        if (data?.cart) {
             if (data.cart.restaurantID == restaurantID) {
                 setCartDishes(data.cart.dishes)
                 setCartPrice(data.cart.cartTotal)

@@ -36,7 +36,7 @@ const Home = () => {
             const setCartQuantity = async () => {
                 const querySnapshot = await getDoc(userRef)
                 let data = querySnapshot.data()
-                setBadgeNumber(data.cart.dishes.length)
+                setBadgeNumber(data?.cart.dishes.length)
             }
             setCartQuantity()
 

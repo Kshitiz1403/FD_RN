@@ -31,7 +31,7 @@ const Explore = () => {
         const getAddress = async() =>{
             const querySnapshot = await getDoc(userRef)
             let data = querySnapshot.data()
-            if (data.address) {
+            if (data?.address) {
                 setAddress({ roomNo: data.address.roomNumber, hostel: data.address.hostel })
             }
         }
