@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import colors from '../constants/colors'
-import TextCustom from '../constants/TextCustom'
 import { Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/core';
 import EditButton from '../components/EditButton';
-import { auth, firestore } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { auth } from '../firebase';
+import axios from 'axios';
+import { port } from '../App';
 
 const Account = () => {
     const [update, setUpdate] = useState(false)
 
     const UID = auth.currentUser.uid
-    const userRef = doc(firestore, 'users',UID)
 
     const [nameOfUser, setNameOfUser] = useState('Hello user')
     const [phone, setPhone] = useState(9999999999)
@@ -22,15 +21,16 @@ const Account = () => {
     useEffect(() => {
 
         const getDetails = async() =>{
-            const querySnapshot = await getDoc(userRef)
-            let data = querySnapshot.data()
+            const userDetails = await axios.get(`${port}/users/${UID}`)
+            let data = userDetails.data
+            
             setPhone(auth.currentUser.phoneNumber)
             if (data) {
-                if(data.Name){
-                    setNameOfUser(data.Name)
+                if(data.name){
+                    setNameOfUser(data.name)
                 }
-                if (data.Email) {
-                    setEmail(data.Email)
+                if (data.email) {
+                    setEmail(data.email)
                 }
                 if (data.graduationYear) {
                     setGraduation(data.graduationYear)

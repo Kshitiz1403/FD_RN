@@ -1,16 +1,15 @@
-import { getAuth } from 'firebase/auth'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, TextInput, View } from 'react-native'
+import { port } from '../App'
 import EditButton from '../components/EditButton'
 import PrimaryButton from '../components/PrimaryButton'
 import SecondaryButton from '../components/SecondaryButton'
 import colors from '../constants/colors'
-import { auth, firestore } from '../firebase'
+import { auth } from '../firebase'
 
-const EditAccount = ({route, navigation}) => {
-    const auth = getAuth()
-    const {toUpdate} = route.params
+const EditAccount = ({ route, navigation }) => {
+    const { toUpdate } = route.params
 
     const [nameOfUser, setNameOfUser] = useState('')
     const [email, setEmail] = useState('')
@@ -21,21 +20,19 @@ const EditAccount = ({route, navigation}) => {
     const [editGraduation, setEditGraduation] = useState(false)
 
     const UID = auth.currentUser.uid
-    // const userRef = firestore.collection('users').doc(UID)
-    const userRef = doc(firestore, 'users',UID)
 
     useEffect(() => {
-        const getDetails = async() =>{
-            const querySnapshot = await getDoc(userRef)
-            let data = querySnapshot.data()
+        const getDetails = async () => {
+            const userDetails = await axios.get(`${port}/users/${UID}`)
+            let data = userDetails.data
             if (data) {
-                if (data.Name){
-                    setNameOfUser(data.Name)
+                if (data.name) {
+                    setNameOfUser(data.name)
                 }
-                if (data.Email){
-                    setEmail(data.Email)
+                if (data.email) {
+                    setEmail(data.email)
                 }
-                if (data.graduationYear){
+                if (data.graduationYear) {
                     setGraduation(data.graduationYear)
                 }
 
@@ -48,51 +45,56 @@ const EditAccount = ({route, navigation}) => {
         return
     }, [])
 
-    const getName = async() =>{
-        const querySnapshot = await getDoc(userRef)
-        let data = querySnapshot.data()
-        if (data){
-            if (data.Name){
-                setNameOfUser(data.Name)
+    const getName = async () => {
+        const userDetails = await axios.get(`${port}/users/${UID}`)
+        let data = userDetails.data
+        if (data) {
+            if (data.name) {
+                setNameOfUser(data.name)
             }
         }
     }
 
-    const getEmail = async() =>{
-
-        const querySnapshot = await getDoc(userRef)
-        let data = querySnapshot.data()
-        if (data){
-            if (data.Email){
-                setEmail(data.Email)
+    const getEmail = async () => {
+        const userDetails = await axios.get(`${port}/users/${UID}`)
+        let data = userDetails.data
+        if (data) {
+            if (data.email) {
+                setEmail(data.email)
             }
         }
     }
 
-    const getGraduation = async() =>{
-        const querySnapshot = await getDoc(userRef)
-        let data = querySnapshot.data()
-        if (data){
-            if (data.graduationYear){
+    const getGraduation = async () => {
+        const userDetails = await axios.get(`${port}/users/${UID}`)
+        let data = userDetails.data
+        if (data) {
+            if (data.graduationYear) {
                 setGraduation(data.graduationYear)
             }
         }
     }
 
-    const handleNameUpdate =  () => {
-        setDoc(userRef, { Name: nameOfUser }, { merge: true })
+    const handleNameUpdate = () => {
+        axios.patch(`${port}/users/${UID}`, {
+            name: nameOfUser
+        })
         setEditName(false)
         toUpdate(true)
     }
 
     const handleMailUpdate = () => {
-        setDoc(userRef, { Email: email }, { merge: true })
+        axios.patch(`${port}/users/${UID}`, {
+            email
+        })
         setEditMail(false)
         toUpdate(true)
     }
 
     const handleGraduationUpdate = () => {
-        setDoc(userRef, {graduationYear: parseInt(graduation)},{merge:true})
+        axios.patch(`${port}/users/${UID}`, {
+            graduationYear: parseInt(graduation)
+        })
         setEditGraduation(false)
         toUpdate(true)
     }
@@ -104,7 +106,7 @@ const EditAccount = ({route, navigation}) => {
                 <SecondaryButton text="Cancel" onPress={() => {
                     setEditName(false)
                     getName()
-                    }} />
+                }} />
             </View>
         )
     }
@@ -116,7 +118,7 @@ const EditAccount = ({route, navigation}) => {
                 <SecondaryButton text="Cancel" onPress={() => {
                     setEditMail(false)
                     getEmail()
-                    }} />
+                }} />
             </View>
         )
     }
@@ -128,7 +130,7 @@ const EditAccount = ({route, navigation}) => {
                 <SecondaryButton text="Cancel" onPress={() => {
                     setEditGraduation(false)
                     getGraduation()
-                    }} />
+                }} />
             </View>
         )
     }
@@ -144,7 +146,7 @@ const EditAccount = ({route, navigation}) => {
                     </View>
                     <View style={itemStyles.inputContainer}>
                         <TextInput
-                            style={itemStyles.input}
+                            style={[itemStyles.input, , { outline: 'none' }]}
                             value={nameOfUser}
                             autoComplete="name"
                             placeholderTextColor={colors.text.default}
@@ -167,7 +169,7 @@ const EditAccount = ({route, navigation}) => {
                     </View>
                     <View style={itemStyles.inputContainer}>
                         <TextInput
-                            style={itemStyles.input}
+                            style={[itemStyles.input, , { outline: 'none' }]}
                             value={email}
                             autoCapitalize="none"
                             autoComplete="email"
@@ -191,7 +193,7 @@ const EditAccount = ({route, navigation}) => {
                     </View>
                     <View style={itemStyles.inputContainer}>
                         <TextInput
-                            style={itemStyles.input}
+                            style={[itemStyles.input, , { outline: 'none' }]}
                             value={graduation.toString()}
                             placeholderTextColor={colors.text.default}
                             editable={editGraduation ? true : false}
@@ -213,10 +215,10 @@ const EditAccount = ({route, navigation}) => {
 export default EditAccount
 
 const styles = StyleSheet.create({
-    updateAndCancel:{
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
-        marginHorizontal: 25, 
+    updateAndCancel: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginHorizontal: 25,
         marginBottom: 10
     }
 })
