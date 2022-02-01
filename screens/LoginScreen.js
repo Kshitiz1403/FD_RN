@@ -1,21 +1,28 @@
-import { useNavigation } from '@react-navigation/core'
 import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
 import React, { useRef, useState, useEffect } from 'react'
-import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from 'react-native'
 import { auth } from '../firebase'
 import { firebaseConfig } from '../firebaseConfig'
-// import * as firebase from 'firebase'
-import colors from '../constants/colors';
 import PrimaryButton from '../components/PrimaryButton'
 import SecondaryButton from '../components/SecondaryButton';
 import { PhoneAuthProvider, RecaptchaVerifier, signInWithCredential, signInWithPhoneNumber } from "firebase/auth";
-import { initializeApp } from 'firebase/app';
+import validator from 'validator';
 
 const LoginScreen = () => {
 
+    const [email, setEmail] = useState('')
     const [phone, setPhone] = useState()
     const [otp, setOtp] = useState()
+    const [isEmailValid, setIsEmailValid] = useState(false)
+    const [isEmailErrorShown, setIsEmailErrorShown] = useState(false)
     const [verificationId, setVerificationId] = useState();
+
+    const emailHandler = (v) =>{
+        setEmail(v)
+        const isEmail = validator.isEmail(v)
+        if(isEmail) {setIsEmailValid(true); setIsEmailErrorShown(false) }
+        else setIsEmailValid(false)
+    }
 
     const handleSendOTP = async () => {
         if (Platform.OS == "web") {
@@ -47,6 +54,8 @@ const LoginScreen = () => {
 
 
     const handleVerifyOTP = async () => {
+        if(!isEmailValid) return setIsEmailErrorShown(true)
+        setIsEmailErrorShown(false)
         try {
             const credential = PhoneAuthProvider.credential(
                 verificationId.verificationId,
@@ -89,6 +98,15 @@ const LoginScreen = () => {
             }
 
             <View style={styles.inputContainer}>
+                {isEmailErrorShown?
+                <Text style={{color:'white'}}>Email is invalid</Text>:null}
+                <TextInput
+                    placeholder="Email"
+                    autoComplete='email'
+                    value={email}
+                    onChangeText={v => emailHandler(v)}
+                    style={[styles.input, {outline:'none', borderColor:!isEmailValid?'red':null, borderWidth:2, borderStyle:'solid'}]}
+                />
                 <View style={[{ flexDirection: 'row', alignItems: 'center' }, styles.input]}>
                     <Text style={{ marginRight: 10, color: 'black' }}>
                         +91
@@ -98,7 +116,7 @@ const LoginScreen = () => {
                         value={phone}
                         onChangeText={v => setPhone(v.replace(/[^0-9]/g, ''))}
                         keyboardType="number-pad"
-                        style={{ width: '90%' }}
+                        style={{ width: '90%', outline:'none' }}
                         maxLength={10}
                         onSubmitEditing={handleSendOTP}
                     />
@@ -108,7 +126,7 @@ const LoginScreen = () => {
                     placeholder="OTP"
                     value={otp}
                     onChangeText={v => setOtp(v.replace(/[^0-9]/g, ''))}
-                    style={styles.input}
+                    style={[styles.input, {outline:'none'}]}
                     keyboardType="number-pad"
                     maxLength={6}
                 />
@@ -117,7 +135,7 @@ const LoginScreen = () => {
                 <PrimaryButton onPress={handleSendOTP} text="Send OTP" style={{ marginBottom: 10 }} />
                 <SecondaryButton text="Verify" onPress={handleVerifyOTP} />
             </View>
-            <View style={{ alignItems: 'center', position:'absolute', bottom:50 }}>
+            <View style={{ alignItems: 'center', position: 'absolute', bottom: 50 }}>
                 <Text style={{ color: 'white' }}>For demo, use credentials- </Text>
                 <Text style={{ color: 'white' }}>Mobile - 9876543210 </Text>
                 <Text style={{ color: 'white' }}>OTP - 123456 </Text>
