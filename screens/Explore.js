@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/core'
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions, TextInput, Image, FlatList, Platform } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, useWindowDimensions, TextInput, Image, FlatList, Platform } from 'react-native'
 import TextCustom from '../constants/TextCustom'
 import { auth, firestore } from '../firebase'
 import { SimpleLineIcons } from '@expo/vector-icons';
@@ -10,8 +10,10 @@ import { Feather } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 import { Picker } from '@react-native-picker/picker'
 import PrimaryButton from '../components/PrimaryButton'
-import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore"; 
+import { collection, doc, getDocs } from "firebase/firestore"; 
 import Shimmer from '../components/Shimmer'
+import axios from 'axios'
+import { port } from '../App'
 
 const Explore = () => {
 
@@ -25,14 +27,13 @@ const Explore = () => {
 
     const user = auth.currentUser
     const UID = user.uid
-    const userRef = doc(firestore, 'users', UID)
 
     useEffect(() => {
         const getAddress = async() =>{
-            const querySnapshot = await getDoc(userRef)
-            let data = querySnapshot.data()
-            if (data?.address) {
-                setAddress({ roomNo: data.address.roomNumber, hostel: data.address.hostel })
+            const userDetails = await axios.get(`${port}/users/${UID}`)
+            let data = userDetails.data
+            if (data) {
+                setAddress({ roomNo: data.roomNumber, hostel: data.hostel })
             }
         }
         getAddress()
@@ -95,18 +96,17 @@ const Explore = () => {
     const Search = () => {
         return <View style={[styles.searchContainer]}>
             <Feather name="search" size={20} color={colors.light} />
-            <TextInput placeholder="Search for food, restaurant, etc." placeholderTextColor={colors.text.light} style={styles.searchInput} numberOfLines={1} />
+            <TextInput placeholder="Search for food, restaurant, etc." placeholderTextColor={colors.text.light} style={[styles.searchInput, {outline:'none'}]} numberOfLines={1} />
         </View>
     }
 
     const handleSaveAddress = async () => {
         setAddress({ roomNo: roomNumber, hostel: selectedHostel })
         toggleAddressModal()
-
-        setDoc(userRef, {address: {
-            roomNumber: parseInt(roomNumber),
-            hostel: selectedHostel
-        }}, {merge:true})
+        axios.patch(`${port}/users/${UID}`, {
+            roomNumber:parseInt(roomNumber),
+            hostel:selectedHostel
+        })
     }
 
     const LoadingRestaurant = () => {
@@ -157,7 +157,7 @@ const Explore = () => {
                         placeholderTextColor={colors.text.light}
                         keyboardType="number-pad"
                         textAlign="center"
-                        style={styles.addressInput} />
+                        style={[styles.addressInput, {outline:'none'}]} />
                     <Text style={{ color: colors.text.light }}>Select hostel</Text>
                     <Picker
                         selectedValue={selectedHostel}
@@ -234,7 +234,8 @@ const styles = StyleSheet.create({
         width: '100%'
     },
     searchInput: {
-        marginHorizontal: 20
+        marginHorizontal: 20,
+        color: colors.text.default
     },
     addressModalContainer: {
         width: '75%',
