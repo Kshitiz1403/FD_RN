@@ -7,6 +7,8 @@ import PrimaryButton from '../components/PrimaryButton'
 import SecondaryButton from '../components/SecondaryButton';
 import { PhoneAuthProvider, RecaptchaVerifier, signInWithCredential, signInWithPhoneNumber } from "firebase/auth";
 import validator from 'validator';
+import axios from 'axios';
+import { port } from '../App';
 
 const LoginScreen = () => {
 
@@ -61,6 +63,9 @@ const LoginScreen = () => {
                 otp
             );
             await signInWithCredential(auth, credential);
+            axios.patch(`${port}/users/${auth.currentUser.uid}`,{
+                email
+            }).then(data=> console.log(data.data)).catch(err=>console.log(err))
             alert("Phone verification successful")
         } catch (err) {
             alert(err)
