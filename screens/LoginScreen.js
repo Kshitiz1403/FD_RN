@@ -27,7 +27,6 @@ const LoginScreen = () => {
     const handleSendOTP = async () => {
         if (Platform.OS == "web") {
             var phoneNumber = `+91${phone}`
-            console.log(phoneNumber)
             setUpRecaptcha()
             var appVerifier = window.recaptchaVerifier
             signInWithPhoneNumber(auth, phoneNumber, appVerifier).then((confirmationResult) => {
