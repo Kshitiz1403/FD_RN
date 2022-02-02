@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import { FlatList, Image, Platform, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, ScrollView, StyleSheet, Text, View } from 'react-native'
 import colors from '../constants/colors'
-import { auth, firestore } from '../firebase';
-import { useIsFocused, useNavigation } from '@react-navigation/core';
 import DishItem, { LoadingDishItem } from '../components/DishItem';
 import { Entypo } from '@expo/vector-icons';
-import LottieView from 'lottie-react-native';
 import { getAuth } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
 import Lottie from 'lottie-react';
 import Shimmer from '../components/Shimmer';
+import axios from 'axios';
+import { port } from '../App';
 
 const Cart = ({ route, navigation }) => {
     const auth = getAuth()
     const UID = auth.currentUser.uid
-    const userRef = doc(firestore, 'users', UID)
-
-    let isFocused = useIsFocused()
 
     const [restaurantID, setRestaurantID] = useState('')
     const [allDishesData, setAllDishesData] = useState([])
@@ -59,37 +54,36 @@ const Cart = ({ route, navigation }) => {
 
     // fetches the IDs of dishes in the cart and stores in a state variable
     const fetchCartInfo = async () => {
-        const userSnapshot = await getDoc(userRef)
+        let userCartData = await axios.get(`${port}/users/${UID}/cart`) 
+        userCartData = userCartData.data
         // data from the logged in user stored in "data"
-        let data = userSnapshot.data()
         let cartDishIDsArr = []
         let allDishesArr = []
         try{
-            data.cart
+            userCartData
         }
         catch{
             setIsLoading(false)
             return setIsCartEmpty(true)
         }
-        if (data.cart) {
+        if (userCartData) {
             // array of all the IDs of dishes added in the cart of the user
-            cartDishIDsArr = data.cart.dishes
+            cartDishIDsArr = userCartData.dishes
             if (cartDishIDsArr == 0) {
                 setIsCartEmpty(true)
             }
-            setCartDishIDs(data.cart.dishes)
-            setCartPrice(data.cart.cartTotal)
+            setCartDishIDs(userCartData.dishes)
+            setCartPrice(userCartData.cartTotal)
 
             // restaurant ID of the restaurant whose dishes are in cart
-            setRestaurantID(data.cart.restaurantID)
-            let restoID = data.cart.restaurantID
+            setRestaurantID(userCartData.restaurantID)
+            let restoID = userCartData.restaurantID
 
-            const restaurantRef = doc(firestore, 'restaurants', restoID)
-            const restaurantSnapshot = await getDoc(restaurantRef)
+            const restaurantSnapshot = await axios.get(`${port}/restaurants/${restoID}`)
 
             setIsLoading(false)
             // restaurant data stored in restoData
-            let restoData = restaurantSnapshot.data()
+            let restoData = restaurantSnapshot.data
             setRestaurantData(restoData)
 
             // list of all dishes from that restaurant
@@ -100,7 +94,7 @@ const Cart = ({ route, navigation }) => {
             let cartDishesDataArr = []
             for (var i of allDishesArr) {
                 for (var j of cartDishIDsArr) {
-                    if (i.dishID == j) {
+                    if (i._id == j) {
                         cartDishesDataArr.push(i)
                     }
                 }
@@ -133,7 +127,7 @@ const Cart = ({ route, navigation }) => {
 
         let priceObj = {}
         allCartDishesData.forEach(el => {
-            priceObj[el.dishID] = el.price
+            priceObj[el._id] = el.price
         })
         // This gives me priceObj as {"dishID":itsPrice, "anotherDishID":itsPrice}
 
@@ -162,13 +156,16 @@ const Cart = ({ route, navigation }) => {
 
     // Responsible for updating changes to the firestore database. Changes => array of dishIDs, restaurantID (whose dishes are in the cart), cartTotal
     const updateCart = async (arr, price) => {
-        setDoc(userRef, {
-            cart: {
-                dishes: arr,
-                restaurantID: restaurantID,
-                cartTotal: price
-            }
-        }, { merge: true })
+        try{
+            await axios.patch(`${port}/users/${UID}/cart`, {
+                dishes: arr, 
+                restaurantID:restaurantID,
+                cartTotal:price
+            })
+        }
+        catch(err){
+            console.error(err)
+        }
     }
 
     // Responsible for reducing item quantity by 1 and later updating that value to the database
@@ -272,17 +269,17 @@ const Cart = ({ route, navigation }) => {
                         <FlatList
                             style={{ backgroundColor: colors.dark, paddingHorizontal: 10 }}
                             data={uniqueAllCartDishesData}
-                            keyExtractor={item => item.dishID}
+                            keyExtractor={item => item._id}
                             renderItem={({ item }) => (
                                 <DishItem
                                     cartDishes={cartDishIDs}
                                     dishName={item.name}
-                                    id={item.dishID}
+                                    id={item._id}
                                     price={item.price}
                                     isNonVeg={item.nonveg}
-                                    getQuantity={getQuantity(item.dishID)}
-                                    removeFromCart={() => removeFromCart(item.dishID)}
-                                    addToCart={() => addToCart(item.dishID)}
+                                    getQuantity={getQuantity(item._id)}
+                                    removeFromCart={() => removeFromCart(item._id)}
+                                    addToCart={() => addToCart(item._id)}
                                 />
                             )}
                         />
