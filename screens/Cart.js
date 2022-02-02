@@ -6,6 +6,8 @@ import { Entypo } from '@expo/vector-icons';
 import LottieView from 'lottie-react-native';
 import { getAuth } from 'firebase/auth';
 import Shimmer from '../components/Shimmer';
+import axios from 'axios';
+import { port } from '../App';
 
 const Cart = ({ route, navigation }) => {
     const auth = getAuth()
