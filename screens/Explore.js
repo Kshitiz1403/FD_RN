@@ -88,7 +88,7 @@ const Explore = () => {
                     <Text style={{color:colors.text.default}}>Deliver to  </Text>
                     <SimpleLineIcons name="arrow-down" size={14} color="white" />
                 </TouchableOpacity>
-                <TextCustom style={{ color: colors.primary }} numberOfLines={1}>{address.roomNo} Room number in {handleHostelIdentifier} Hostel </TextCustom>
+                <TextCustom style={{ color: colors.primary }} numberOfLines={1}>{address.roomNo}Room number in {handleHostelIdentifier} Hostel </TextCustom>
             </View>)
     }
 
