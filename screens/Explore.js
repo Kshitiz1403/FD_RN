@@ -71,12 +71,15 @@ const Explore = () => {
 
     let restaurantArray = []
     const getRestaurants = async () => {
-        const querySnapshot = await getDocs(collection(firestore,'restaurants'))
-        querySnapshot.forEach((doc)=>{
-            restaurantArray.push({...doc.data(), id:doc.id})
-        })
-        setRestaurants(restaurantArray)
-        setIsLoaded(true)
+        try{
+            const response = await axios.get(`${port}/restaurants`)
+            restaurantArray = response.data
+            setRestaurants(restaurantArray)
+            setIsLoaded(true)
+        }
+        catch(err){
+            console.error(err)
+        }
     }
     const DeliverTo = () => {
         return (
@@ -135,8 +138,8 @@ const Explore = () => {
                     </View>
                     <View>
                         <Text numberOfLines={1} style={restaurantStyles.cuisines}>
-                            {props.cuisines}
-                        </Text>
+                            {props.cuisines.map(cuisine=>cuisine)}
+                        </Text>                   
                     </View>
                 </View>
             </TouchableOpacity>
@@ -181,8 +184,8 @@ const Explore = () => {
             <FlatList
                 showsHorizontalScrollIndicator={false}
                 data={restaurants}
-                renderItem={({ item }) => <RestaurantItem name={item.restaurantName} rating={item.rating} cuisines={item.cuisines} imageURI={item.imageURI} id={item.id} />}
-                keyExtractor={item => item.id}
+                renderItem={({ item }) => <RestaurantItem name={item.name} rating={item.rating} cuisines={item.cuisines} imageURI={item.imageURI} id={item._id} />}
+                keyExtractor={item => item._id}
             />
             }
             </>
