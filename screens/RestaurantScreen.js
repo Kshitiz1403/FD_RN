@@ -5,6 +5,8 @@ import { auth, firestore } from "../firebase";
 import DishItem, { LoadingDishItem } from "../components/DishItem";
 import { useIsFocused } from "@react-navigation/core";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import axios from "axios";
+import { port } from "../App";
 
 
 const RestaurantScreen = ({ route, navigation }) => {
@@ -19,7 +21,7 @@ const RestaurantScreen = ({ route, navigation }) => {
     // Build a logic to fetch cart items from the database at initial render
     const UID = auth.currentUser.uid
     const userRef = doc(firestore, 'users', UID)
-    const restaurantRef = doc(firestore, 'restaurants', restaurantID)
+    // const restaurantRef = doc(firestore, 'restaurants', restaurantID)
 
     const [dishes, setDishes] = useState([])
 
@@ -37,27 +39,35 @@ const RestaurantScreen = ({ route, navigation }) => {
 
     // Gets the array of dishIDs and cart total present in the cart
     const getCart = async () => {
-        const querySnapshot = await getDoc(userRef)
-        let data = querySnapshot.data()
-        if (data?.cart) {
-            if (data.cart.restaurantID == restaurantID) {
-                setCartDishes(data.cart.dishes)
-                setCartPrice(data.cart.cartTotal)
+        try {
+            let cart = await axios.get(`${port}/users/${UID}/cart`)
+            cart = cart.data
+            if (cart) {
+                if (cart.restaurantID == restaurantID) {
+                    setCartDishes(cart.dishes)
+                    setCartPrice(cart.cartTotal)
+                }
             }
+            setIsLoaded(true)
         }
-        setIsLoaded(true)
+        catch (err) {
+            console.error(err)
+        }
     }
 
     // Updates the cart details like dishes array, cart total, restaurantID in the database 
 
-    const updateCart = () => {
-        setDoc(userRef, {
-            cart: {
+    const updateCart = async () => {
+        try {
+            await axios.patch(`${port}/users/${UID}/cart`, {
                 dishes: cartDishes,
                 restaurantID: restaurantID,
                 cartTotal: cartPrice
-            }
-        }, { merge: true })
+            })
+        }
+        catch (err) {
+            console.error(err)
+        }
     }
 
     // triggers every time we add an item to the cart
@@ -72,7 +82,7 @@ const RestaurantScreen = ({ route, navigation }) => {
     }
 
     // Method for getting the cart total amount, updates the state, updates cart total in the database
-    const cartPriceHandler = () => {
+    const cartPriceHandler = async () => {
         let frequency = {}
         for (let num of cartDishes) {
             frequency[num] = frequency[num] ? frequency[num] + 1 : 1
@@ -81,7 +91,7 @@ const RestaurantScreen = ({ route, navigation }) => {
 
         let priceObj = {}
         dishes.forEach(el => {
-            priceObj[el.dishID] = el.price
+            priceObj[el._id] = el.price
         })
         // This gives me priceObj as {"dishID":itsPrice, "anotherDishID":itsPrice}
         let price = 0
@@ -95,13 +105,16 @@ const RestaurantScreen = ({ route, navigation }) => {
         setCartPrice(price)
 
         // Seems similar to updateCart but is not. It uses a local variable instead of a state variable to update cart total to the database 
-        setDoc(userRef, {
-            cart: {
+        try {
+            await axios.patch(`${port}/users/${UID}/cart`, {
                 dishes: cartDishes,
                 restaurantID: restaurantID,
                 cartTotal: price
-            }
-        }, { merge: true })
+            })
+        }
+        catch (err) {
+            console.error(err)
+        }
     }
 
     // triggers every time we remove an item to the cart
@@ -133,10 +146,14 @@ const RestaurantScreen = ({ route, navigation }) => {
 
     // gets all the dishes from the restaurant and updates the state to an array of dishIDs
     const getDishes = async () => {
-        const querySnapshot = await getDoc(restaurantRef)
-        let data = querySnapshot.data()
-        let dishesArr = data.dishes
-        setDishes(dishesArr)
+        try {
+            const response = await axios.get(`${port}/restaurants/${restaurantID}`)
+            let dishesArr = response.data.dishes
+            setDishes(dishesArr)
+        }
+        catch (err) {
+            console.error(err)
+        }
     }
 
     const Cart = () => <View style={[cartStyles.container,
@@ -174,10 +191,10 @@ const RestaurantScreen = ({ route, navigation }) => {
     const LoadingDishes = () => {
         return (
             <ScrollView>
-                <LoadingDishItem image description/>
-                <LoadingDishItem description/>
-                <LoadingDishItem description/>
-                <LoadingDishItem image description/>
+                <LoadingDishItem image description />
+                <LoadingDishItem description />
+                <LoadingDishItem description />
+                <LoadingDishItem image description />
             </ScrollView>
         )
     }
@@ -186,26 +203,26 @@ const RestaurantScreen = ({ route, navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
 
-        {!isLoaded?<LoadingDishes/>:
-            <FlatList
-                data={dishes}
-                renderItem={({ item }) =>
-                    <DishItem
-                        cartDishes={cartDishes}
-                        dishName={item.name}
-                        isNonVeg={item.nonveg}
-                        getQuantity={getQuantity(item.dishID)}
-                        price={item.price}
-                        description={item.description}
-                        image={item.imageURI}
-                        id={item.dishID}
-                        addToCart={() => addToCart(item.dishID, item.price)}
-                        removeFromCart={() => removeFromCart(item.dishID, item.price)}
-                    />
-                }
-                keyExtractor={item => item.dishID}
-            />
-        }
+            {!isLoaded ? <LoadingDishes /> :
+                <FlatList
+                    data={dishes}
+                    renderItem={({ item }) =>
+                        <DishItem
+                            cartDishes={cartDishes}
+                            dishName={item.name}
+                            isNonVeg={item.nonveg}
+                            getQuantity={getQuantity(item._id)}
+                            price={item.price}
+                            description={item.description}
+                            image={item.imageURI}
+                            id={item._id}
+                            addToCart={() => addToCart(item._id, item.price)}
+                            removeFromCart={() => removeFromCart(item._id, item.price)}
+                        />
+                    }
+                    keyExtractor={item => item._id}
+                />
+            }
             <Cart />
         </SafeAreaView>
     );
